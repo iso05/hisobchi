@@ -1,5 +1,8 @@
 import {languageIndex} from './refund-options.js';
 const labels={
+ pdfPreview:['PDFni ko‘rish','Просмотреть PDF','Preview PDF'],
+ closePreview:['Yopish','Закрыть','Close'],
+ loadingPdf:['PDF ochilmoqda…','Открываем PDF…','Opening PDF…'],
  title:['Ariza yaratish','Создать заявление','Create an application'],
  subtitle:['Davlat bojini to‘liq yoki ortiqcha to‘langan qismini qaytarish uchun.','Для возврата госпошлины полностью или в части переплаты.','Request a full refund of state duty or the return of an overpayment.'],
  language:['Ariza tili','Язык заявления','Application language'], mode:['Qaysi summani qaytarmoqchisiz?','Какую сумму вы хотите вернуть?','Which amount would you like refunded?'],

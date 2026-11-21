@@ -5,6 +5,7 @@ import {refundLimit,refundDraft,missingField,money} from '../lib/refund.js';
 import {agencies,grounds,exclusions,clauseChoices,excessTypes,civilBenefits,kinTypes,languageIndex} from '../lib/refund-options.js';
 import {refundCopy} from '../lib/refund-copy.js';
 import SignaturePad from './SignaturePad.jsx';
+import RefundPdfPreview from './RefundPdfPreview.jsx';
 
 function saveFile(blob,name) {
   const url=URL.createObjectURL(blob);
@@ -20,12 +21,13 @@ export default function RefundDemo({lang}) {
   const [draft,setDraft]=useState(null);
   const [consent,setConsent]=useState(false);
   const [signature,setSignature]=useState('');
+  const [showPdf,setShowPdf]=useState(false);
   const [busy,setBusy]=useState(false);
   const [status,setStatus]=useState('');
   const [invalid,setInvalid]=useState('');
   const form=useRef(null), editor=useRef(null), version=useRef(0);
   const copy=refundCopy(lang), idx=languageIndex(lang);
-  function invalidate(){version.current++;setConsent(false);setSignature('');setDraft(null);setInvalid('');setStatus('');setBusy(false);}
+  function invalidate(){version.current++;setShowPdf(false);setConsent(false);setSignature('');setDraft(null);setInvalid('');setStatus('');setBusy(false);}
   function clear(){invalidate();setMode('');setData({});}
   useEffect(()=>{
     function restore(e){if(e.persisted) clear();}
@@ -117,7 +119,11 @@ export default function RefundDemo({lang}) {
       </form></section>
       <section className="result-card refund-preview"><h2>{copy.edit}</h2>
         {draft!==null ? <><textarea className="document-editor" lang={docLang} ref={editor} aria-label={copy.edit} value={draft} disabled={busy} autoComplete="off" spellCheck={false} onChange={e=>{setDraft(e.target.value);setConsent(false);setSignature('');setStatus('');}}/>
-          <button type="button" className="outline-button" disabled={!draft.trim()||consent||busy} onClick={()=>setConsent(true)}>{consent?copy.confirmed:copy.confirm}</button>
+          <div className="refund-preview-actions">
+            <button type="button" className="outline-button" disabled={!draft.trim()||busy} onClick={()=>setShowPdf(true)}>{copy.pdfPreview}</button>
+            <button type="button" className="outline-button" disabled={!draft.trim()||consent||busy} onClick={()=>setConsent(true)}>{consent?copy.confirmed:copy.confirm}</button>
+          </div>
+          {showPdf && <RefundPdfPreview text={draft} signature={signature} lang={docLang} name={data.name} copy={copy} onClose={()=>setShowPdf(false)}/>}
           {consent && <><SignaturePad copy={copy} disabled={busy} onSign={setSignature}/><div className="refund-downloads">{['pdf','docx'].map(f=><button className="primary-button" key={f} type="button" disabled={busy || !signature} onClick={()=>download(f)}><Download size={16}/>{copy.download} · {f.toUpperCase()}</button>)}</div></>}
         </>:<p>{copy.previewEmpty}</p>}
         <div className="panel-note refund-legal-note"><a href="https://lex.uz/docs/-4680944#-4682898" target="_blank" rel="noreferrer">{copy.source}</a></div>

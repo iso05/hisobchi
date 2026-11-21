@@ -1,4 +1,5 @@
 """Serve the compiled frontend and API from one origin."""
+import mimetypes
 from pathlib import Path
 
 from fastapi.staticfiles import StaticFiles
@@ -11,6 +12,8 @@ DIST = Path(__file__).resolve().parents[2] / 'frontend' / 'dist'
 if not (DIST / 'index.html').is_file():
     raise RuntimeError('Build the frontend first: npm --prefix frontend run build')
 
+# Windows may register ES modules as plain text, which browsers reject for PDF workers.
+mimetypes.add_type('text/javascript', '.mjs')
 app.mount('/assets', StaticFiles(directory=DIST / 'assets'), name='assets')
 
 
