@@ -1,0 +1,70 @@
+{
+ "seed": 600,
+ "total": 1929,
+ "by_task": {
+  "fee_lookup": 1112,
+  "fee_calc_pct_min": 12,
+  "fee_calc_needs_bhm": 38,
+  "fee_wrong_premise": 159,
+  "fee_no_answer": 105,
+  "fee_calc": 146,
+  "article_quote": 115,
+  "article_locate": 33,
+  "amendment_history": 62,
+  "amendment_single": 67,
+  "amendment_by_law": 44,
+  "out_of_scope": 36
+ },
+ "by_split": {
+  "train": 1716,
+  "val": 107,
+  "test": 106
+ },
+ "by_split_task": {
+  "train": {
+   "fee_lookup": 976,
+   "out_of_scope": 30,
+   "amendment_single": 67,
+   "article_quote": 105,
+   "fee_no_answer": 95,
+   "fee_wrong_premise": 143,
+   "amendment_by_law": 40,
+   "amendment_history": 58,
+   "article_locate": 29,
+   "fee_calc_needs_bhm": 35,
+   "fee_calc": 126,
+   "fee_calc_pct_min": 12
+  },
+  "val": {
+   "fee_lookup": 68,
+   "amendment_by_law": 2,
+   "article_quote": 4,
+   "article_locate": 2,
+   "fee_no_answer": 6,
+   "out_of_scope": 3,
+   "fee_calc": 11,
+   "fee_calc_needs_bhm": 1,
+   "fee_wrong_premise": 8,
+   "amendment_history": 2
+  },
+  "test": {
+   "fee_lookup": 68,
+   "out_of_scope": 3,
+   "fee_wrong_premise": 8,
+   "fee_calc": 9,
+   "article_locate": 2,
+   "fee_no_answer": 4,
+   "article_quote": 6,
+   "amendment_by_law": 2,
+   "amendment_history": 2,
+   "fee_calc_needs_bhm": 2
+  }
+ },
+ "chars_p50": 3181,
+ "chars_p95": 6366,
+ "chars_max": 8664,
+ "excluded_review_records": [
+  "ORQ600_TABLE_FEE_767"
+ ],
+ "validation_errors": 0
+}
