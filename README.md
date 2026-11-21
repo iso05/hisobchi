@@ -2,7 +2,7 @@
 
 Hisobchi O‘zbekistondagi davlat bojini foydalanuvchining holatiga qarab hisoblaydi. Natijada summa, qo‘llangan stavka va Lex.uz manbasi chiqadi. Admin yangi kalkulyatorni kod yozmasdan yaratadi, sinaydi va e’lon qiladi.
 
-[Checkpoint taqdimoti (PDF)](output/pdf/Hisobchi-checkpoint.pdf) · [Texnik qo‘llanma (PDF)](output/pdf/Hisobchi-texnik-qollanma.pdf) · [SQLite sxemasi](docs/SQLITE-SXEMA.svg)
+[Hisobchi taqdimoti (PDF)](output/pdf/Hisobchi-taqdimot.pdf) · [Texnik qo‘llanma (PDF)](output/pdf/Hisobchi-texnik-qollanma.pdf) · [SQLite sxemasi](docs/SQLITE-SXEMA.svg)
 
 ## Ishga tushirish
 
