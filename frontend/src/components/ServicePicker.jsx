@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
-import { Search, Check, ChevronDown, X, CarFront, House, KeyRound, FileKey, Handshake, Landmark, Scale, BriefcaseBusiness, Smartphone, Lightbulb, Calculator, Copy, HeartCrack, Gavel, FileSearch, ScrollText } from 'lucide-react';
+import { Search, Check, ChevronDown, X, CarFront, House, KeyRound, FileKey, Handshake, Landmark, Scale, BriefcaseBusiness, Smartphone, Lightbulb, Calculator, Copy, HeartCrack, Gavel, FileSearch, ScrollText, LayoutGrid, Stamp, TrafficCone, Folder } from 'lucide-react';
 import { words, categoryName, serviceName } from '../lib/catalog-copy.js';
 import { plain } from '../lib/plain-language.js';
 import { SERVICE_ICONS } from '../lib/service-icons.js';
 
 const normalize = (text) => String(text).toLowerCase().replace(/[‘’ʻʼ`]/g, "'");
+
+const categoryIcons = new Map([
+  ['Barchasi', LayoutGrid], ['Notarial', Stamp], ['Sud', Scale],
+  ['Davlat xizmati', Landmark], ['Patent', Lightbulb], ['Yo‘l harakati jarimalari', TrafficCone],
+]);
 
 const serviceIcons = {notary_car:CarFront,notary_property:House,notary_vehicle_power:KeyRound,notary_property_power:FileKey,notary_lease:Handshake,notary_inheritance:Landmark,court_civil:Scale,court_economic:BriefcaseBusiness,vehicle_power_electronic:Smartphone,patent_application:Lightbulb,court_copies:Copy,court_divorce:HeartCrack,court_economic_filing:Gavel,court_special_proceeding:FileSearch,court_nonproperty:ScrollText};
 
@@ -41,11 +46,13 @@ export default function ServicePicker({ services, selected, onSelect, lang = "uz
       <div className="category-track">
         {[false,true].map(duplicate => (
           <div className="category-cycle" key={String(duplicate)} aria-hidden={duplicate || undefined}>
-            {categories.map(c => (
-              <button key={c} type="button" tabIndex={duplicate ? -1 : 0} aria-pressed={category === c} onClick={() => { setCategory(c); setExpanded(false); }}>
+            {categories.map(c => {
+              const Icon = categoryIcons.get(c) || Folder;
+              return <button key={c} type="button" tabIndex={duplicate ? -1 : 0} aria-pressed={category === c} onClick={() => { setCategory(c); setExpanded(false); }}>
+                <Icon size={18} strokeWidth={1.8} aria-hidden="true" />
                 {c === 'Barchasi' ? t('Barchasi','Все','All') : categoryName(c,lang)}
-              </button>
-            ))}
+              </button>;
+            })}
           </div>
         ))}
       </div>
