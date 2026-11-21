@@ -236,3 +236,20 @@ body:has(.refund-pdf-modal[open]) { overflow:hidden; }
 .refund-pdf-scroll { min-height:0; overflow:auto; padding:clamp(6px,1vw,16px); overscroll-behavior:contain; }
 .refund-pdf-pages canvas { display:block; width:min(100%,1000px); height:auto; margin:0 auto 12px; background:white; box-shadow:0 0 0 1px #dde4df; }
 .refund-sr-text { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+
+@keyframes brand-stroke-glide {
+  0%, 100% { translate: 0 0; }
+  38% { translate: 3px -4px; }
+  72% { translate: -1px 1.5px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .floating-brand:focus-visible .brand-mark i {
+    animation: brand-stroke-glide 480ms ease-in-out;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .floating-brand:hover .brand-mark i {
+      animation: brand-stroke-glide 480ms ease-in-out;
+    }
+  }
+  .floating-brand .brand-mark i:nth-child(2) { animation-delay: 85ms; }
+}
