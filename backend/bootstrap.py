@@ -1,4 +1,4 @@
-"""Create a private local admin password once. Never overwrite an existing one."""
+"""Prepare local admin access and install the editable checkpoint calculators."""
 from pathlib import Path
 import secrets
 
@@ -9,3 +9,10 @@ if not target.exists():
     print('Local admin password created in backend/.env (not printed).')
 else:
     print('Existing backend/.env retained.')
+
+# Install editable checkpoint definitions once the local admin account exists.
+import os
+from app.main import app
+from traffic_presets import install_traffic, loan_preset
+
+install_traffic(app, os.environ['ADMIN_PASSWORD'], extra=[loan_preset()])

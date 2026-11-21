@@ -1,16 +1,12 @@
-# Hisobchi | LexHackathon
+# Hisobchi
 
-Hozir **10 ta davlat boji kalkulyatori** mavjud. React frontend Python backendga ulangan. Har bir kalkulyatorning savollari, shartlari, imtiyozlari va admin orqali yangilanadigan stavkalari alohida.
+Hisobchi O‘zbekistondagi davlat bojini foydalanuvchining holatiga qarab hisoblaydi. Natijada summa, qo‘llangan stavka va Lex.uz manbasi chiqadi. Admin yangi kalkulyatorni kod yozmasdan yaratadi, sinaydi va e’lon qiladi.
 
-Yo‘nalishlar: avtomobil oldi-sotdisi; ko‘chmas mulk oldi-sotdisi; notarial avtoishonchnoma; ko‘chmas mulk ishonchnomasi; notarial ijara; meros guvohnomasi; fuqarolik pul da’vosi; iqtisodiy pul da’vosi; elektron avtoishonchnoma; ixtiro/foydali model talabnomasi.
+[Checkpoint taqdimoti (PDF)](output/pdf/Hisobchi-checkpoint.pdf) · [Texnik qo‘llanma (PDF)](output/pdf/Hisobchi-texnik-qollanma.pdf) · [SQLite sxemasi](docs/SQLITE-SXEMA.svg)
 
-**Qo‘lda qonun bo‘yicha tekshirish:** `docs/KALKULYATOR_MANBALARI.md`da 10 kalkulyator uchun 29 ta aniq havola, modda/band va qidiruv iborasi bor. `docs/MANUAL_QABUL.md`da nazorat misollari va istisnolar berilgan. Boshlang‘ich qoidalar jamoa tekshiruvi kutilayotganini natija kartasi ochiq ko‘rsatadi.
+## Ishga tushirish
 
-## Ochish
-
-### GitHub’dan birinchi marta olish
-
-Yopiq repoga kirish uchun GitHub taklifini qabul qiling.
+Windows uchun Python 3.12, Node.js 22 va npm kerak. PowerShell oynasida quyidagilarni bajaring.
 
 ```powershell
 git clone https://github.com/iso05/hisobchi.git
@@ -19,86 +15,40 @@ py -3.12 -m venv backend/.venv
 backend/.venv/Scripts/python.exe -m pip install -r backend/requirements.lock.txt
 backend/.venv/Scripts/python.exe backend/bootstrap.py
 npm.cmd --prefix frontend ci
-Set-Content frontend/.env.local 'VITE_API_BASE_URL=/api/v1'
+npm.cmd --prefix frontend run build
+backend/.venv/Scripts/python.exe -m uvicorn app.web:app --app-dir backend --host 127.0.0.1 --port 8000
 ```
 
-Loyiha papkasidan backendni `backend/.venv/Scripts/python.exe -m uvicorn app.main:app --app-dir backend --port 8000` bilan, frontendni ikkinchi terminalda `npm.cmd --prefix frontend run dev` bilan ishga tushiring.
+Brauzerda [Hisobchini oching](http://127.0.0.1:8000/). Shu jarayon tayyor frontend fayllari va API’ni bitta manzildan uzatadi. Birinchi ishga tushirishda bootstrap admin parolini backend/.env fayliga yozadi va namuna kalkulyatorlarini e’lon qiladi. Admin panel manzili /admin.
 
-- Kalkulyator: http://127.0.0.1:5173/
-- Admin panel: http://127.0.0.1:5173/admin
-- AI yordamchi: http://127.0.0.1:5173/ai-yordamchi (yangi model ulanishini kutmoqda)
-- API hujjatlari: http://127.0.0.1:8000/docs
+## Jonli demo
 
-Admin paroli `backend/.env`dagi `ADMIN_PASSWORD` qiymati. Parol Gitga kiritilmaydi.
+| Kalkulyator | Bitta o‘zgarish | 2026-11-21 uchun natija |
+| --- | --- | --- |
+| Avtomobil oldi-sotdisi | Oddiy avtomobil, bank kreditisiz, notarius idorasida. Xaridor boshqa shaxsdan ota yoki onaga almashadi. | 1 320 000 so‘mdan 66 000 so‘mga |
+| Qarz shartnomasi | Tasdiqlash o‘rniga bekor qilish tanlanadi. | 110 000 so‘mdan 55 000 so‘mga |
+| Tezlikni oshirish jarimasi | Cheklov 60 km/soat. Radar tezligi 85 dan 86 km/soatga o‘zgaradi. | 440 000 so‘mdan 2 200 000 so‘mga |
 
-## Qayta ishga tushirish
+Ariza sahifasida fuqaro ortiqcha to‘langan bojni qaytarish uchun o‘zbekcha yoki ruscha ariza tayyorlaydi va PDF yoki DOCX yuklaydi. Shaxsiy rekvizitlar brauzerda ishlanadi.
 
-Backend uchun bir terminal:
+## LexAI
+
+Chatni yoqish uchun backend/.env fayliga LEXAI_URL qiymati sifatida jamoaning faol Gradio HTTPS manzilini kiriting va backendni qayta ishga tushiring. /ai-yordamchi sahifasi joriy savolni backend orqali /ask_json xizmatiga yuboradi. Gradio manzili vaqtinchalik bo‘lishi mumkin. Modelning xulosasi va arifmetikasi xato chiqishi mumkin. Yakuniy summa uchun tegishli kalkulyatordan foydalaning. Kalkulyator va ariza LexAI xizmatidan mustaqil ishlaydi.
+
+## Serverga joylash
+
+Frontendni yig‘ib, yuqoridagi app.web:app jarayonini HTTPS teskari proksi ortida ishga tushiring. HISOBCHI_PUBLIC_ORIGIN qiymatini saytning aniq HTTPS manziliga sozlang. Mijoz IP va HTTPS sarlavhalari uchun faqat o‘z proksingiz manziliga ishoning. ADMIN_PASSWORD va LEXAI_URL server muhitida yoki himoyalangan backend/.env faylida saqlanadi. SQLite uchun HISOBCHI_DB orqali doimiy diskdagi faylni belgilang. Zaxira olish va tiklash tartibi [texnik qo‘llanmada](output/pdf/Hisobchi-texnik-qollanma.pdf) keltirilgan.
+
+## Dasturlash va sinov
+
+Frontend bilan ishlashda alohida terminalda npm.cmd --prefix frontend run dev buyrug‘i Vite’ni 5173-portda ishga tushiradi. Mahalliy API uchun odatiy port 8000.
 
 ```powershell
-cd D:\LEXH\backend
-.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+Push-Location backend
+.venv/Scripts/python.exe -m pytest -q
+Pop-Location
+npm.cmd --prefix frontend test
+npm.cmd --prefix frontend run build
 ```
 
-Frontend uchun boshqa terminal:
-
-```powershell
-cd D:\LEXH\frontend
-npm.cmd run dev
-```
-
-Python muhiti va paketlar o‘rnatilgan. `frontend/.env.local`da `VITE_API_BASE_URL=/api/v1` sozlangan. Vite `/api`ni 8000-portga uzatadi. Tizim shu kompyuterda ishlaydi; internetga e’lon qilinmagan.
-
-## Adminning ish tartibi
-
-Admin panelda har bir kalkulyator jadval qatorida turadi. **Tahrirlash** → BHM, davlat boji va foizlar → Lex.uz manbasi, sana va izoh → tekshirilganini belgilash → **O‘zgarishlarni saqlash**. Saqlash yangi qoida versiyasini yaratadi va belgilangan sanadan ishga tushiradi.
-
-**O‘chirish** kalkulyatorni ommaviy ro‘yxatdan olib tashlaydi va yangi hisoblarni to‘xtatadi. Oldingi qoidalar va hisoblar saqlanadi. “O‘chirilganlarni ko‘rsatish” orqali **Qayta tiklash** mumkin.
-
-Qoralama hisobga ta’sir qilmaydi. Oldingi e’lon qilingan qoidalar o‘zgarmaydi; har bir hisob qoidaning versiyasi va natijasini saqlaydi. Yangi qoida o‘z sanasidan ishlaydi. Admin qonunlarni o‘zi tekshiradi; avtomatik huquqiy yangilanish yo‘q.
-
-## Hisoblash va suhbat
-
-Chat oynasi keyingi AI integratsiyasi uchun ajratilgan.
-
-Hisob faqat **davlat boji** uchun. Gerb yig‘imi, huquqiy-texnik xizmatlar va YHXX xarajatlari alohida; ularning miqdori hozir aniqlanmagan. YTH shikasti, kombinatsiyalangan imtiyoz yoki maxsus maqomda taxminiy natija chiqarilmaydi.
-
-## Statistika
-
-Foydalanuvchi imtiyozdan amalda foydalanganini o‘zi bildiradi. Har bir hisob faqat bir marta sanaladi. Noma’lum summa avtomatik tejashga aylantirilmaydi. Tasdiqlar SQLite bazasida saqlanadi; brauzerdagi eski demo raqamlaridan alohida. Bu to‘lov provayderi tasdiqlagan tranzaksiyalar emas.
-
-## Tekshirish
-
-```powershell
-cd D:\LEXH\backend
-.\.venv\Scripts\python.exe -m pytest -q
-cd D:\LEXH\frontend
-npm.cmd test
-npm.cmd run build
-```
-
-## Fayllar
-
-- `backend/README.md` - server va cheklovlar.
-- `docs/KALKULYATOR_MANBALARI.md` - barcha kalkulyatorlar uchun aniq Lex.uz havolalari (CSV/JSON ham bor).
-- `docs/MANUAL_QABUL.md` - qo‘lda tekshirish misollari va imtiyozlar.
-- `docs/LEGAL_SOURCES.md` - birinchi avtomobil kalkulyatorining oldingi manba qaydlari.
-- `docs/API_CONTRACT.md` - joriy API shartnomasi.
-- `backend/requirements.lock.txt` - o‘rnatilgan paket versiyalari.
-- `BACKEND_PROMPT.md` - oldingi reja; joriy kod uchun README va API hujjatlari ustuvor.
-
-### Pastki menyu va notarial imtiyozlar (20.11.2026)
-
-Ommaviy xizmatlar: `/` — kalkulyatorlar, `/ai-yordamchi` — suhbat oynasi, `/ai-xizmat` — ariza loyihasi demosidir. `/ai-ariza` eski manzili ham ishlaydi. Admin `/admin` manzilida saqlangan, ommaviy menyuda ko‘rsatilmaydi.
-
-Har bir notarial kalkulyator shakli ostida 11-moddaning 20 bandi bor: avval tegishli bandlar, so‘ng “Barcha 20 holat” orqali to‘liq ma’lumotnoma ko‘rinadi. Ma’lumotnoma boshqa xizmatga oid bandni avtomatik ozodlikka aylantirmaydi. Manba iboralari `docs/NOTARIAL_IMTIYOZLAR.json` faylida saqlanadi va manbalar registrini yig‘uvchi skript bilan rasmiy HTML nusxasiga solishtiriladi.
-
-Muhim hisob tuzatishi: oldi-sotdi va ijara bitimida faqat bir taraf davlat bojidan ozod bo‘lsa, 20-modda bo‘yicha boshqa taraf to‘liq to‘laydi. 11-modda maqomi tanlanganda taraflar haqida qo‘shimcha savol beriladi. Tashkilot imtiyozi bilan jismoniy taraf yoki qarindoshlik ma’lumotlari zid bo‘lsa avtomatik nol chiqarilmaydi. Ishonchnoma kabi bir tomonlama notarial harakat alohida tekshiriladi.
-
-### Mahsulot yo‘nalishi va so‘nggi interfeys (20.11.2026)
-
-Hisobchi — Calk.UZ singari qidiruv va xizmat kartalariga ega, davlat bojlariga ixtisoslashgan kalkulyatorlar katalogi. Asosiy oqim: xizmatni tanlash → kerakli ma’lumotlarni kiritish → boj, mos imtiyoz va Lex.uz asosini ko‘rish. AI suhbat yangi model ulanishini kutmoqda; ariza bo‘limi namuna sifatida ishlaydi.
-
-Statistika va imtiyozdan foydalanganlikni bildirish ommaviy interfeysdan olib tashlangan. Oldingi saqlangan ma’lumotlar o‘chirilmagan. Bosh sahifada hech bir kalkulyator avtomatik tanlanmaydi. Pastki menyu o‘rniga “Nima qilmoqchisiz?” tugmasi orqali xizmat tanlash oynasi ochiladi.
-
-AI xizmatda avval ariza turi tanlanadi: to‘lovni to‘liq qaytarish yoki ortiqcha qismini qaytarish. Ikkinchi holatda qaytarishni so‘raydigan summa = amalda to‘langan summa − to‘lash kerak bo‘lgan summa. Qaytarish huquqi avtomatik tasdiqlanmaydi; ariza loyiha sifatida tayyorlanadi va yuborilmaydi. Matnni tahrirlash, nusxalash va TXT yuklash mumkin. Namuna: 600 000 − 440 000 = 160 000 so‘m.
+[Backend va ma’lumotlar modeli](docs/MVP-TEXNIK.md) · [Kalkulyator manbalari](docs/KALKULYATOR_MANBALARI.md) · [Qo‘lda sinash misollari](docs/MANUAL_QABUL.md)

@@ -90,9 +90,9 @@ def test_draft_publish_updates_calculation_but_retains_snapshot(client, app):
     assert client.post(f"/api/v1/admin/rules/{new['id']}/publish", json={'reviewed': True}).status_code == 200
     assert calc(client, relative_type='parent')['payable_amount'] == 79_200
     with app.state.database.connect() as db:
-        original = json.loads(db.execute('SELECT result FROM calculations WHERE id=?', (old['calculation_id'],)).fetchone()['result'])
+        original = json.loads(db.execute('SELECT result FROM calculations WHERE public_id=?', (old['calculation_id'],)).fetchone()['result'])
         assert original['payable_amount'] == 66_000
-        assert db.execute("SELECT COUNT(*) FROM rules WHERE status='published' AND service_id='notary_car'").fetchone()[0] == 2
+        assert db.execute("SELECT COUNT(*) FROM rules WHERE status='published' AND service_id=(SELECT id FROM calculators WHERE slug='notary_car')").fetchone()[0] == 2
         with pytest.raises(sqlite3.IntegrityError):
             db.execute("UPDATE rules SET config='{}' WHERE id=1")
 
@@ -140,7 +140,7 @@ def test_table_edit_updates_duty_and_percent_atomically(client, app):
     assert after['standard_amount'] == 1760000
     assert after['payable_amount'] == 105600
     with app.state.database.connect() as db:
-        assert json.loads(db.execute('SELECT result FROM calculations WHERE id=?', (before['calculation_id'],)).fetchone()['result'])['payable_amount'] == 66000
+        assert json.loads(db.execute('SELECT result FROM calculations WHERE public_id=?', (before['calculation_id'],)).fetchone()['result'])['payable_amount'] == 66000
     assert len(client.get('/api/v1/admin/rules').json()['rules']) == 2
 
 
@@ -165,8 +165,8 @@ def test_delete_removes_public_calculator_and_restore_preserves_history(client, 
     app.state.database.initialize()
     assert app.state.database.calculator_active() is False
     with app.state.database.connect() as db:
-        assert db.execute('SELECT id FROM calculations WHERE id=?', (old['calculation_id'],)).fetchone()
-        assert db.execute("SELECT COUNT(*) FROM rules WHERE service_id='notary_car'").fetchone()[0] == 1
+        assert db.execute('SELECT id FROM calculations WHERE public_id=?', (old['calculation_id'],)).fetchone()
+        assert db.execute("SELECT COUNT(*) FROM rules WHERE service_id=(SELECT id FROM calculators WHERE slug='notary_car')").fetchone()[0] == 1
     assert client.post('/api/v1/admin/calculators/notary_car/restore').status_code == 200
     assert len(client.get('/api/v1/services').json()['services']) == 15
     assert calc(client)['payable_amount'] == 1320000

@@ -516,7 +516,7 @@ export default function Admin() {
             <div className="audit-section">
               {events.map((event) => (
                 <p key={event.id}>
-                  <time>{event.created_at} UTC</time>
+                  <time>{event.created_at}</time>
                   <span>
                     #{event.rule_id} · {event.action}
                   </span>

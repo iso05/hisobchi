@@ -9,5 +9,19 @@ export default defineConfig(async ({ mode }) => {
       if (response.ok && (await response.json()).service === 'hisobchi') target = override;
     } catch { /* Use the standard local API when a preview server has stopped. */ }
   }
-  return { optimizeDeps:{include:['pdfmake/build/pdfmake','pdfmake/build/vfs_fonts','docx']}, server: { host: '127.0.0.1', port: 5173, proxy: { '/api': { target, changeOrigin: true } } } };
+  const contentPolicy = [
+    "default-src 'self'", "script-src 'self'", "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob:", "font-src 'self' data:", "worker-src 'self' blob:",
+    "object-src 'none'", "base-uri 'none'", "form-action 'self'",
+  ].join('; ');
+  const securityMeta = {
+    name: 'production-content-policy', apply: 'build',
+    transformIndexHtml() {
+      return [
+        { tag:'meta', attrs:{ 'http-equiv':'Content-Security-Policy', content:contentPolicy }, injectTo:'head-prepend' },
+        { tag:'meta', attrs:{ name:'referrer', content:'no-referrer' }, injectTo:'head-prepend' },
+      ];
+    },
+  };
+  return { plugins:[securityMeta], optimizeDeps:{include:['pdfmake/build/pdfmake','pdfmake/build/vfs_fonts','docx']}, server: { host: '127.0.0.1', port: 5173, proxy: { '/api': { target, changeOrigin: true } } } };
 });

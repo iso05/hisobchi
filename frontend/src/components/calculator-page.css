@@ -13,3 +13,20 @@
 @media(max-width:760px) {.fee-workspace{grid-template-columns:minmax(0,1fr)}.fee-result{scroll-margin-block:16px}.fee-page .search-categories{flex-wrap:wrap}.fee-page .field{min-width:0}.fee-page .console-intro h1{overflow-wrap:break-word}}
 
 .fee-result .benefit-note {padding:12px 15px;border-inline-start:3px solid #8eb69e;background:#f3f8f5;color:#355b46;border-radius:4px}
+
+.catalog-results { margin-block-end: 25px; }
+.fee-page .catalog-results .search-results { margin: 0; }
+.catalog-reveal { display: grid; grid-template-rows: 0fr; visibility: hidden; transition: grid-template-rows .32s ease, visibility 0s .32s; }
+.catalog-reveal[data-expanded=true] { grid-template-rows: 1fr; visibility: visible; transition-delay: 0s; }
+.catalog-clip { min-height: 0; overflow: hidden; }
+.catalog-clip .rich-service-grid { padding-block-start: 16px; }
+.catalog-toggle {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin: 16px auto 0; min-height: 44px; padding: 9px 18px;
+  border: 1px solid #c6ded0; border-radius: 24px; background: #fff; color: #125b43; font-weight: 650;
+}
+.catalog-toggle:hover { background: #edf6f0; }
+.catalog-toggle svg { transition: transform .25s ease; }
+.catalog-toggle[aria-expanded=true] svg { transform: rotate(180deg); }
+@media(max-width:620px) { .catalog-clip .rich-service-grid { padding-block-start: 11px; } }
+@media(prefers-reduced-motion:reduce) { .catalog-reveal, .catalog-toggle svg { transition: none; } }

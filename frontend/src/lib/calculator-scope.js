@@ -11,7 +11,7 @@ export function scopeFor(id, answers = {}) {
 }
 
 export const scopeNotes = {
-  notary_car:['YTHda shikastlanmagan transport uchun. Ayirboshlashda qiymati yuqori transportni tanlang.', 'Для транспорта без повреждений в ДТП. При обмене выберите более дорогое транспортное средство.', 'For vehicles without accident damage. For an exchange, select the higher-value vehicle.'],
+  notary_car:['YTHda shikastlanmagan transport uchun. Qarindoshlik va bank krediti birga kelgan bitim bu hisobga kirmaydi. Ayirboshlashda qiymati yuqori transportni tanlang.', 'Для транспорта без повреждений в ДТП. Расчёт исключает одновременное применение родства и банковского кредита. При обмене выберите более дорогое транспортное средство.', 'For vehicles without accident damage. Sales involving both kinship and bank credit are outside this calculator. For an exchange, select the higher-value vehicle.'],
   notary_property:['Odatdagi oldi-sotdi uchun. Toshkentdagi maxsus xorijiy xarid va undan keyingi qayta sotuv alohida tartibga kiradi.', 'Для обычной купли-продажи. Особые сделки иностранных покупателей в Ташкенте и последующая перепродажа имеют отдельные ставки.', 'For ordinary sales. Special foreign purchases in Tashkent and subsequent resales have separate rates.'],
   court_civil:['Bitta talab, summa so‘mda. Ro‘yxatdagi imtiyozli talablar birinchi bosqich uchun.', 'Одно требование в сумах. Перечисленные льготные иски рассчитаны для первой инстанции.', 'One claim in UZS. Listed exempt claims cover first-instance filings.'],
   court_economic:['Bitta pul talabi, summa so‘mda. Shikoyat bosqichida faqat umumiy stavka hisoblanadi.', 'Одно денежное требование в сумах. Для жалоб доступен общий тариф.', 'One money claim in UZS. Appeals cover the standard rate only.'],
@@ -25,6 +25,7 @@ export function formState(id, questions, entered) {
   const excluded = new Set(['multiple','needs_review','registry','court_reissue','work_insurance']);
   const fields = questions.map(q => ({
     ...q, options: q.options?.filter(o => {
+      if (id === 'notary_car' && q.key === 'bank_credit' && entered.relative_type && entered.relative_type !== 'other') return o.value !== 'yes';
       if (id === 'court_economic' && entered.stage === 'appeal' && q.key === 'small_business') return o.value === 'no';
       return id.startsWith('custom_') || !excluded.has(o.value);
     }),

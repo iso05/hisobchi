@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 1130" role="img"><title>Hisobchi · SQLite v2</title><rect width="1280" height="1130" fill="#f5f9f6"/><g font-family="Segoe UI,Arial,sans-serif" fill="#153e30"><text x="28" y="58" font-size="36" font-weight="650">Hisobchi · SQLite v2</text><text x="28" y="95" font-size="20">9 jadval · 7 tashqi kalit · PK — asosiy kalit, → — SQLite tekshiradigan bog‘lanish</text>
+<rect x="28" y="125" width="387" height="150" rx="14" stroke="#bfd7c7" fill="white"/><text x="42" y="157" font-size="21" font-weight="650">calculators</text>
+<text x="43" y="190" font-size="16">id</text><text x="401" y="190" text-anchor="end" font-size="14" fill="#32694f">INTEGER PK</text>
+<text x="43" y="220" font-size="16">slug</text><text x="401" y="220" text-anchor="end" font-size="14" fill="#32694f">TEXT</text>
+<text x="43" y="250" font-size="16">deleted_at</text><text x="401" y="250" text-anchor="end" font-size="14" fill="#32694f">DATE</text>
+<rect x="448" y="125" width="387" height="270" rx="14" stroke="#bfd7c7" fill="white"/><text x="462" y="157" font-size="21" font-weight="650">rules</text>
+<text x="463" y="190" font-size="16">id</text><text x="821" y="190" text-anchor="end" font-size="14" fill="#32694f">INTEGER PK</text>
+<text x="463" y="220" font-size="16">service_id</text><text x="821" y="220" text-anchor="end" font-size="14" fill="#32694f">INTEGER → calculators.id</text>
+<text x="463" y="250" font-size="16">status</text><text x="821" y="250" text-anchor="end" font-size="14" fill="#32694f">TEXT</text>
+<text x="463" y="280" font-size="16">effective_from</text><text x="821" y="280" text-anchor="end" font-size="14" fill="#32694f">DATE</text>
+<text x="463" y="310" font-size="16">config</text><text x="821" y="310" text-anchor="end" font-size="14" fill="#32694f">TEXT</text>
+<text x="463" y="340" font-size="16">created_at</text><text x="821" y="340" text-anchor="end" font-size="14" fill="#32694f">DATE</text>
+<text x="463" y="370" font-size="16">published_at</text><text x="821" y="370" text-anchor="end" font-size="14" fill="#32694f">DATE</text>
+<rect x="868" y="125" width="387" height="180" rx="14" stroke="#bfd7c7" fill="white"/><text x="882" y="157" font-size="21" font-weight="650">audit</text>
+<text x="883" y="190" font-size="16">id</text><text x="1241" y="190" text-anchor="end" font-size="14" fill="#32694f">INTEGER PK</text>
+<text x="883" y="220" font-size="16">rule_id</text><text x="1241" y="220" text-anchor="end" font-size="14" fill="#32694f">INTEGER → rules.id</text>
+<text x="883" y="250" font-size="16">action</text><text x="1241" y="250" text-anchor="end" font-size="14" fill="#32694f">TEXT</text>
+<text x="883" y="280" font-size="16">created_at</text><text x="1241" y="280" text-anchor="end" font-size="14" fill="#32694f">DATE</text>
+<rect x="28" y="460" width="387" height="150" rx="14" stroke="#bfd7c7" fill="white"/><text x="42" y="492" font-size="21" font-weight="650">custom_categories</text>
+<text x="43" y="525" font-size="16">id</text><text x="401" y="525" text-anchor="end" font-size="14" fill="#32694f">INTEGER PK</text>
+<text x="43" y="555" font-size="16">name</text><text x="401" y="555" text-anchor="end" font-size="14" fill="#32694f">TEXT</text>
+<text x="43" y="585" font-size="16">icon</text><text x="401" y="585" text-anchor="end" font-size="14" fill="#32694f">TEXT</text>
+<rect x="448" y="460" width="387" height="300" rx="14" stroke="#bfd7c7" fill="white"/><text x="462" y="492" font-size="21" font-weight="650">calculations</text>
+<text x="463" y="525" font-size="16">id</text><text x="821" y="525" text-anchor="end" font-size="14" fill="#32694f">INTEGER PK</text>
+<text x="463" y="555" font-size="16">public_id</text><text x="821" y="555" text-anchor="end" font-size="14" fill="#32694f">TEXT</text>
+<text x="463" y="585" font-size="16">service_id</text><text x="821" y="585" text-anchor="end" font-size="14" fill="#32694f">INTEGER → calculators.id</text>
+<text x="463" y="615" font-size="16">rule_id</text><text x="821" y="615" text-anchor="end" font-size="14" fill="#32694f">INTEGER → rules.id</text>
+<text x="463" y="645" font-size="16">owner</text><text x="821" y="645" text-anchor="end" font-size="14" fill="#32694f">TEXT</text>
+<text x="463" y="675" font-size="16">answers</text><text x="821" y="675" text-anchor="end" font-size="14" fill="#32694f">TEXT</text>
+<text x="463" y="705" font-size="16">result</text><text x="821" y="705" text-anchor="end" font-size="14" fill="#32694f">TEXT</text>
+<text x="463" y="735" font-size="16">created_at</text><text x="821" y="735" text-anchor="end" font-size="14" fill="#32694f">DATE</text>
+<rect x="868" y="460" width="387" height="270" rx="14" stroke="#bfd7c7" fill="white"/><text x="882" y="492" font-size="21" font-weight="650">reports</text>
+<text x="883" y="525" font-size="16">id</text><text x="1241" y="525" text-anchor="end" font-size="14" fill="#32694f">INTEGER PK</text>
+<text x="883" y="555" font-size="16">public_id</text><text x="1241" y="555" text-anchor="end" font-size="14" fill="#32694f">TEXT</text>
+<text x="883" y="585" font-size="16">calculation_id</text><text x="1241" y="585" text-anchor="end" font-size="14" fill="#32694f">INTEGER → calculations.id</text>
+<text x="883" y="615" font-size="16">standard_amount</text><text x="1241" y="615" text-anchor="end" font-size="14" fill="#32694f">INTEGER</text>
+<text x="883" y="645" font-size="16">paid_amount</text><text x="1241" y="645" text-anchor="end" font-size="14" fill="#32694f">INTEGER</text>
+<text x="883" y="675" font-size="16">saving_amount</text><text x="1241" y="675" text-anchor="end" font-size="14" fill="#32694f">INTEGER</text>
+<text x="883" y="705" font-size="16">created_at</text><text x="1241" y="705" text-anchor="end" font-size="14" fill="#32694f">DATE</text>
+<rect x="28" y="820" width="387" height="240" rx="14" stroke="#bfd7c7" fill="white"/><text x="42" y="852" font-size="21" font-weight="650">custom_calculators</text>
+<text x="43" y="885" font-size="16">id</text><text x="401" y="885" text-anchor="end" font-size="14" fill="#32694f">INTEGER PK → calculators.id</text>
+<text x="43" y="915" font-size="16">category_id</text><text x="401" y="915" text-anchor="end" font-size="14" fill="#32694f">INTEGER → custom_categories.id</text>
+<text x="43" y="945" font-size="16">definition</text><text x="401" y="945" text-anchor="end" font-size="14" fill="#32694f">TEXT</text>
+<text x="43" y="975" font-size="16">revision</text><text x="401" y="975" text-anchor="end" font-size="14" fill="#32694f">INTEGER</text>
+<text x="43" y="1005" font-size="16">tested_hash</text><text x="401" y="1005" text-anchor="end" font-size="14" fill="#32694f">TEXT</text>
+<text x="43" y="1035" font-size="16">created_at</text><text x="401" y="1035" text-anchor="end" font-size="14" fill="#32694f">DATE</text>
+<rect x="448" y="820" width="387" height="150" rx="14" stroke="#bfd7c7" fill="white"/><text x="462" y="852" font-size="21" font-weight="650">sessions</text>
+<text x="463" y="885" font-size="16">id</text><text x="821" y="885" text-anchor="end" font-size="14" fill="#32694f">INTEGER PK</text>
+<text x="463" y="915" font-size="16">token_hash</text><text x="821" y="915" text-anchor="end" font-size="14" fill="#32694f">TEXT</text>
+<text x="463" y="945" font-size="16">expires_at</text><text x="821" y="945" text-anchor="end" font-size="14" fill="#32694f">REAL</text>
+<rect x="868" y="820" width="387" height="150" rx="14" stroke="#bfd7c7" fill="white"/><text x="882" y="852" font-size="21" font-weight="650">login_attempts</text>
+<text x="883" y="885" font-size="16">id</text><text x="1241" y="885" text-anchor="end" font-size="14" fill="#32694f">INTEGER PK</text>
+<text x="883" y="915" font-size="16">client_hash</text><text x="1241" y="915" text-anchor="end" font-size="14" fill="#32694f">TEXT</text>
+<text x="883" y="945" font-size="16">attempted_at</text><text x="1241" y="945" text-anchor="end" font-size="14" fill="#32694f">INTEGER</text>
+</g></svg>

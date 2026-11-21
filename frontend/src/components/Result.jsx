@@ -15,12 +15,13 @@ export default function Result({ result, pending }) {
     </div><div className="panel-note"><ShieldCheck size={17} /><span>Hisob bilan birga qonun havolasi ham ko‘rsatiladi.</span></div>
   </aside>;
   const exempt = ['exempt', 'discounted'].includes(result.status);
+  const fine = result.charge_type === 'fine' || result.category === 'Yo‘l harakati jarimalari';
   const unknown = result.payable_amount == null;
   return <aside className="result-card has-result" aria-label="Hisob natijasi" aria-live="polite">
     <div className="panel-heading"><h2>Sizning hisobingiz</h2><span className="small-badge">{result.is_demo ? 'Namuna' : 'Natija'}</span></div>
     <div className="service-summary"><span className="square-icon"><FilePenLine size={21} /></span><h3>{plain(result.title)}</h3></div>
-    <div className={`amount ${unknown ? 'amount-unknown' : ''}`}>{unknown ? 'Tekshirish kerak' : <>{money(result.payable_amount)} <span>so‘m</span></>}</div>
-    <p className="amount-label">{unknown ? 'Aniq summa hali belgilanmagan' : result.duty_breakdown?.length ? 'Jami davlat boji' : 'To‘lanadigan davlat boji'}</p>
+    <div className={`amount ${unknown ? 'amount-unknown' : ''}`}>{unknown ? '—' : <>{money(result.payable_amount)} <span>so‘m</span></>}</div>
+    <p className="amount-label">{unknown ? 'Bu holat uchun yakuniy summa chiqarilmadi' : fine ? 'To‘liq jarima' : result.duty_breakdown?.length ? 'Jami davlat boji' : 'To‘lanadigan davlat boji'}</p>
     <div className={`benefit-banner ${exempt ? '' : 'benefit-pending'}`}>{exempt ? <CheckCircle2 size={22} /> : <CircleHelp size={22} />}<strong>{plain(result.benefit_title)}</strong></div>
     <p className="result-explanation">{plain(result.explanation)}</p>
     {result.duty_breakdown?.length > 0 && <div className="breakdown duty-components" aria-label="Davlat boji qismlari">{result.duty_breakdown.map(part => <React.Fragment key={part.name}><span>{part.name} · {part.pay_percent}%</span><strong>{money(part.amount)} so‘m</strong></React.Fragment>)}</div>}

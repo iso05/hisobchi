@@ -14,6 +14,8 @@ function pairs(rows) {
 }
 
 const services = pairs(`
+Tezlikni oshirish jarimasi|Штраф за превышение скорости|Speeding fine
+Svetofor va to‘xtash chizig‘i jarimasi|Штраф за сигнал светофора и стоп-линию|Signal and stop-line fine
 notary_car|Продажа или обмен автомобиля|Vehicle sale or exchange
 notary_property|Купля-продажа недвижимости|Real estate sale
 notary_vehicle_power|Доверенность на автомобиль у нотариуса|Notarised vehicle power of attorney
@@ -33,6 +35,9 @@ Qarz shartnomasi|Договор займа|Loan agreement
 `);
 
 const fields = pairs(`
+radar_speed|Скорость на радаре до вычета 5 км/ч|Recorded speed before the 5 km/h deduction
+speed_limit|Ограничение скорости (км/ч)|Posted speed limit (km/h)
+signal_action|Что произошло при запрещающем сигнале или жесте?|What happened at the stop signal or traffic officer’s stop instruction?
 vehicle_type|Какой вид транспорта передают?|What type of vehicle is being transferred?
 special_status|Доступные льготы|Available benefits
 transaction_kind|Продажа или обмен?|Sale or exchange?
@@ -79,6 +84,8 @@ Qanday xizmat kerak?|Какое действие нужно оформить?|Wh
 `);
 
 const options = pairs(`
+stop_line|Только заехал(а) за стоп-линию|Crossed the stop line only
+passed_signal|Проехал(а) на запрещающий сигнал или жест|Drove through the stop signal or instruction
 no|Нет|No
 yes|Да|Yes
 unsure|Не знаю|I don’t know
@@ -177,6 +184,7 @@ Shartnomani tasdiqlash|Удостоверить договор|Certify agreement
 `);
 
 const categories = pairs(`
+Yo‘l harakati jarimalari|Дорожные штрафы|Traffic fines
 Notarial|Нотариус|Notary
 Sud|Суды|Courts
 Davlat xizmati|Госуслуги|Public services

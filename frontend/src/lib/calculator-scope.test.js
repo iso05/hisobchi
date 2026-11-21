@@ -25,3 +25,10 @@ test('unknown benefit and other relatives have a label in all three languages',(
   assert.match(optionName({key:'relative_type'},other,'ru'),/родственники/);
   assert.match(optionName({key:'relative_type'},other,'en'),/relatives not listed/);
 });
+
+test('the public car form does not combine two rates without a statutory formula',()=>{
+  const fields=[{key:'relative_type',options:[{value:'parent'},{value:'other'}]},
+                {key:'bank_credit',options:[{value:'yes'},{value:'no'}]}];
+  assert.equal(formState('notary_car',fields,{relative_type:'parent',bank_credit:'yes'}).answers.bank_credit,undefined);
+  assert.equal(formState('notary_car',fields,{relative_type:'other',bank_credit:'yes'}).answers.bank_credit,'yes');
+});

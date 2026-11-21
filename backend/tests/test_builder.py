@@ -78,9 +78,9 @@ def test_edits_stay_draft_require_retest_and_keep_old_calculations(client):
     newer=client.post('/api/v1/calculate',json={'service_id':e['id'],'answers':{'relative':'parent'}}).json()['result']
     assert newer['payable_amount']==88000 and newer['title']=='Yangi nom'
     with client.app.state.database.connect() as db:
-        stored=db.execute('SELECT result FROM calculations WHERE id=?',(old['calculation_id'],)).fetchone()['result']
+        stored=db.execute('SELECT result FROM calculations WHERE public_id=?',(old['calculation_id'],)).fetchone()['result']
         assert '66000' in stored
-        assert db.execute("SELECT COUNT(*) FROM rules WHERE service_id=? AND status='published'",(e['id'],)).fetchone()[0]==2
+        assert db.execute("SELECT COUNT(*) FROM rules WHERE service_id=(SELECT id FROM calculators WHERE slug=?) AND status='published'",(e['id'],)).fetchone()[0]==2
 
 
 def test_stale_update_and_publish_are_rejected(client):

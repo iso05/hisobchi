@@ -9,6 +9,7 @@ function citation(source, lang) {
   const label = source.article || source.title || 'Lex.uz';
   if (lang === 'uz') return label;
   const t = (...args) => words(lang,...args);
+  if (/128[³⁴]/.test(label)) return label.replace('MJtK',lang==='ru'?'КоАО':'Administrative Code').split(' · ')[0].replace('-modda',lang==='ru'?' ст.':' art.').replace('1-qism',lang==='ru'?'ч. 1':'part 1').replace('2-qism',lang==='ru'?'ч. 2':'part 2') + (label.includes('5 km') ? ' (−5 km/h)' : '');
   if (/BHM/.test(label)) return t('', 'Базовая расчётная величина', 'Base calculation amount');
   if (/613-son.*I–II/.test(label)) return t('', 'Постановление № 613, пункт 17', 'Resolution 613, clause 17');
   if (/613-son/.test(label)) return t('', 'Постановление № 613, пункт 15', 'Resolution 613, clause 15');
@@ -66,6 +67,7 @@ export default function FeeForm({service, lang}) {
   }
   const note = scopeNotes[service.id];
   const amount = result?.payable_amount;
+  const fine = service.charge_type === 'fine';
   const config = model?.current.rule?.config;
   return <div className="workspace fee-workspace">
     <section className="chat-card manual-card refined-calculator">
@@ -83,14 +85,14 @@ export default function FeeForm({service, lang}) {
           : <FieldInput name={q.key} type={q.type === 'text' ? 'text' : 'number'} min={q.min} max={q.key.endsWith('_numerator') ? Math.min(q.max ?? Infinity, answers[q.key.replace('_numerator','_denominator')] ?? Infinity) : q.max} step={q.step ?? 1} required={q.required !== false} maxLength={300} disabled={busy} value={answers[q.key] ?? ''} onValueChange={value =>update(q.key,q.type === 'text' || value === '' ? value : Number(value))}/>}
         </label>)}
         <label className="field">{t('Hisoblash sanasi','Дата расчёта','Calculation date')}<input required type="date" name="as_of_date" min={model.current.rule?.effective_from} max={model.current.server_date} value={asOf} disabled={busy} onChange={e=>{setAsOf(e.target.value);setError('');setResult(null);}}/></label>
-        <button className="primary-button full-width" type="submit" disabled={busy}>{busy ? t('Hisoblanmoqda…','Считаем…','Calculating…') : t('Bojni hisoblash','Рассчитать пошлину','Calculate fee')}</button>
+        <button className="primary-button full-width" type="submit" disabled={busy}>{busy ? t('Hisoblanmoqda…','Считаем…','Calculating…') : fine ? t('Jarimani hisoblash','Рассчитать штраф','Calculate fine') : t('Bojni hisoblash','Рассчитать пошлину','Calculate fee')}</button>
       </form>}
       {error && <div className="error-box" role="alert">{error === 'scope' ? t('Bu holat uchun e’lon qilingan aniq stavka yo‘q.','Для этой ситуации нет опубликованной однозначной ставки.','There is no published, unambiguous rate for this case.') : error === 'input' ? t('Kiritilgan sonlar va ulushlarni tekshiring.','Проверьте суммы и доли.','Check the amounts and shares you entered.') : t('Xizmatga ulanib bo‘lmadi. Yana urinib ko‘ring.','Не удалось подключиться. Попробуйте снова.','Could not connect. Please try again.')}{error === 'load' && <button type="button" onClick={()=>setAttempt(v=>v+1)}>{t('Qayta urinish','Повторить','Retry')}</button>}</div>}
     </section>
     <section className="chat-card fee-result" ref={resultRef} tabIndex={-1} aria-live="polite">
       <Scale size={25}/><h2>{t('Sizning hisobingiz','Ваш расчёт','Your fee')}</h2>
-      {!result ? <p>{t('Savollarga javob bering. Shu yerda boj summasi va qonundagi asosi chiqadi.','Ответьте на вопросы, чтобы увидеть сумму и основание в законе.','Answer the questions to see the fee and its legal basis.')}</p> : <>
-        <p>{amount == null ? t('Yaxlitlashdan oldingi aniq hisob','Точный расчёт до округления','Exact amount before rounding') : t('To‘lanadigan davlat boji','Госпошлина к уплате','State duty payable')}</p>
+      {!result ? <p>{fine ? t('Qaror bo‘yicha to‘liq jarima hisoblanadi. Erta to‘lash chegirmasi alohida.','Рассчитывается полный штраф без скидки за досрочную оплату.','Calculates the full fine before any early-payment discount.') : t('Savollarga javob bering. Shu yerda boj summasi va qonundagi asosi chiqadi.','Ответьте на вопросы, чтобы увидеть сумму и основание в законе.','Answer the questions to see the fee and its legal basis.')}</p> : <>
+        <p>{amount == null ? t('Yaxlitlashdan oldingi aniq hisob','Точный расчёт до округления','Exact amount before rounding') : fine ? t('To‘liq jarima','Полный штраф','Full fine') : t('To‘lanadigan davlat boji','Госпошлина к уплате','State duty payable')}</p>
         <strong className="fee-total">{amount == null ? result.unrounded_payable+' '+t('so‘m','сум','UZS') : money(amount)}</strong>
         {result.benefit_unspecified && <p className="benefit-note">{amount === 0 ? t('Shaxsiy imtiyoz tanlanmadi. Boshqa javoblaringiz bo‘yicha boj 0 so‘m.','Личная льгота не выбрана. По остальным ответам пошлина равна нулю.','No personal benefit was selected. Your other answers give a zero fee.') : t('Bu hisobga qo‘shimcha imtiyoz kiritilmadi. Agar sizga tegishli imtiyoz aniqlansa, to‘lovingiz kamayishi mumkin.','В расчёт не включена дополнительная льгота. Если выяснится, что вам положена льгота, сумма может уменьшиться.','No additional benefit was applied. If you qualify for an additional benefit, your fee may be lower.')}</p>}
         {result.status === 'exempt' && <p>{t('Siz tanlagan holat davlat bojidan ozod.','В выбранном случае госпошлина не взимается.','The selected case is exempt from state duty.')}</p>}

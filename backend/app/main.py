@@ -5,7 +5,7 @@ import re
 import secrets
 import time
 import uuid
-from collections import defaultdict, deque
+from urllib.parse import urlsplit
 from datetime import date
 from pathlib import Path
 
@@ -20,7 +20,7 @@ from .engine import calculate, missing_question, get_questions, prepare_answers,
 from .db import Database
 from .models import Answers, CalculateRequest, LoginRequest, ReportRequest, RuleConfig, CatalogRuleConfig
 from .notarial import reference_for
-from . import builder
+from . import builder, lexai
 
 ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(ROOT / '.env')
@@ -36,17 +36,35 @@ def create_app(db_path=None, admin_password=None):
     database = Database(database_path)
     database.initialize()
     password = admin_password if admin_password is not None else os.getenv('ADMIN_PASSWORD', '')
+    public_origin = os.getenv('HISOBCHI_PUBLIC_ORIGIN', '').strip().rstrip('/')
+    if public_origin:
+        url = urlsplit(public_origin)
+        if url.scheme != 'https' or not url.hostname or url.username or url.password or url.path or url.query or url.fragment:
+            raise ValueError('HISOBCHI_PUBLIC_ORIGIN must be a single HTTPS origin')
+    allowed_origins = {public_origin} if public_origin else ALLOWED
+    secure_cookie = bool(public_origin)
     app = FastAPI(title='Hisobchi API', version='0.2.0')
     app.state.database = database
-    app.add_middleware(CORSMiddleware, allow_origins=list(ALLOWED), allow_credentials=True, allow_methods=['GET', 'POST', 'PUT', 'DELETE'], allow_headers=['Content-Type'])
-    attempts = defaultdict(deque)
+    app.add_middleware(CORSMiddleware, allow_origins=sorted(allowed_origins), allow_credentials=True, allow_methods=['GET', 'POST', 'PUT', 'DELETE'], allow_headers=['Content-Type'])
+    @app.middleware('http')
+    async def protect_response(request, call_next):
+        response = await call_next(request)
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['Referrer-Policy'] = 'no-referrer'
+        response.headers['X-Frame-Options'] = 'DENY'
+        if request.url.path.startswith('/api/'):
+            response.headers['Cache-Control'] = 'no-store'
+        if secure_cookie and request.url.scheme == 'https':
+            response.headers['Strict-Transport-Security'] = 'max-age=31536000'
+        return response
+
 
     def require_origin(request: Request):
         # Same-origin browser requests and our Vite proxy are supported. Reject cross-site writes.
         origin = request.headers.get('origin')
-        if origin and origin not in ALLOWED:
+        if origin and origin not in allowed_origins:
             raise HTTPException(403, 'Bu manzildan o‘zgartirishga ruxsat yo‘q.')
-        if request.headers.get('sec-fetch-site') == 'cross-site' and origin not in ALLOWED:
+        if request.headers.get('sec-fetch-site') == 'cross-site' and origin not in allowed_origins:
             raise HTTPException(403, 'Begona saytdan so‘rov rad etildi.')
 
     def admin(request: Request):
@@ -63,7 +81,7 @@ def create_app(db_path=None, admin_password=None):
         token = request.cookies.get('hisobchi_visitor', '')
         if not re.fullmatch(r'[0-9a-f]{64}', token):
             token = secrets.token_hex(32)
-            response.set_cookie('hisobchi_visitor', token, httponly=True, samesite='strict', max_age=30*86400, path='/api/v1')
+            response.set_cookie('hisobchi_visitor', token, httponly=True, secure=secure_cookie, samesite='strict', max_age=30*86400, path='/api/v1')
         return hashlib.sha256(token.encode()).hexdigest()
 
     def store_result(result, answers, visitor):
@@ -71,7 +89,7 @@ def create_app(db_path=None, admin_password=None):
         sources = precise_result_sources(result['service_id'], result.get('legal_basis', [])) if result['service_id'] in BY_ID else result.get('legal_basis', [])
         result = {**result, 'calculation_id': calculation_id, 'legal_basis':sources}
         with database.connect() as db:
-            db.execute('INSERT INTO calculations(id,owner,rule_id,answers,result) VALUES(?,?,?,?,?)', (calculation_id, visitor, result.get('rule_version'), json.dumps(answers,ensure_ascii=False), json.dumps(result, ensure_ascii=False)))
+            db.execute('INSERT INTO calculations(public_id,service_id,owner,rule_id,answers,result) VALUES(?,(SELECT id FROM calculators WHERE slug=?),?,?,?,?)', (calculation_id, result['service_id'], visitor, result.get('rule_version'), json.dumps(answers,ensure_ascii=False), json.dumps(result, ensure_ascii=False)))
         return result
 
     def perform(body, visitor):
@@ -103,9 +121,15 @@ def create_app(db_path=None, admin_password=None):
     def health():
         return {'status': 'ok', 'service': 'hisobchi', 'calculator_count': len(CATALOG)+len(builder.published_services(database,today()))}
 
+    @app.post('/api/v1/assistant/chat', dependencies=[Depends(require_origin)])
+    def assistant_chat(body: lexai.ChatQuestion) -> lexai.ChatAnswer:
+        return lexai.ask(body.question)
+
     @app.get('/api/v1/services')
     def services():
-        return {'services': [public_service(item) for item in CATALOG if database.calculator_active(item['id'])]+builder.published_services(database,today())}
+        with database.connect() as db:
+            active = {r['slug'] for r in db.execute('SELECT slug FROM calculators WHERE deleted_at IS NULL')}
+        return {'services': [public_service(item) for item in CATALOG if item['id'] in active]+builder.published_services(database,today())}
 
     @app.get('/api/v1/calculator/schema')
     def schema(service_id: str='notary_car'):
@@ -133,24 +157,29 @@ def create_app(db_path=None, admin_password=None):
     @app.post('/api/v1/admin/login')
     def login(body: LoginRequest, request: Request, response: Response):
         require_origin(request)
-        key = request.client.host if request.client else 'local'
-        now = time.monotonic()
-        queue = attempts[key]
-        while queue and now - queue[0] > 300:
-            queue.popleft()
-        if len(queue) >= 5:
-            raise HTTPException(429, 'Urinishlar ko‘p. 5 daqiqadan keyin qayta urinib ko‘ring.')
-        if not password or len(password) < 16:
-            raise HTTPException(503, 'Backend .env faylida kamida 16 belgili ADMIN_PASSWORD sozlang.')
-        if not secrets.compare_digest(hashlib.sha256(body.password.encode()).digest(), hashlib.sha256(password.encode()).digest()):
-            queue.append(now)
-            raise HTTPException(401, 'Parol noto‘g‘ri.')
-        queue.clear()
+        client_key = hashlib.sha256((request.client.host if request.client else 'local').encode()).hexdigest()
+        now = int(time.time())
+        if not password or len(password) < 16 or password == 'replace-with-a-long-local-password':
+            raise HTTPException(503, 'Mahalliy admin parolini sozlang.')
+        valid = secrets.compare_digest(hashlib.sha256(body.password.encode()).digest(), hashlib.sha256(password.encode()).digest())
         token = secrets.token_urlsafe(32)
         with database.connect() as db:
-            db.execute('DELETE FROM sessions WHERE expires_at<?', (time.time(),))
-            db.execute('INSERT INTO sessions(token_hash,expires_at) VALUES(?,?)', (hashlib.sha256(token.encode()).hexdigest(), time.time()+4*3600))
-        response.set_cookie('hisobchi_admin', token, httponly=True, samesite='strict', max_age=4*3600, path='/api/v1')
+            db.execute('BEGIN IMMEDIATE')
+            db.execute('DELETE FROM login_attempts WHERE attempted_at<=?',(now-300,))
+            failures = db.execute('SELECT COUNT(*) FROM login_attempts WHERE client_hash=?',(client_key,)).fetchone()[0]
+            if failures >= 5:
+                raise HTTPException(429, 'Urinishlar ko‘p. 5 daqiqadan keyin qayta urinib ko‘ring.')
+            if not valid:
+                db.execute('INSERT INTO login_attempts(client_hash,attempted_at) VALUES(?,?)',(client_key,now))
+            else:
+                db.execute('DELETE FROM login_attempts WHERE client_hash=?',(client_key,))
+                previous = request.cookies.get('hisobchi_admin','')
+                db.execute('DELETE FROM sessions WHERE token_hash=?',(hashlib.sha256(previous.encode()).hexdigest(),))
+                db.execute('DELETE FROM sessions WHERE expires_at<=?',(now,))
+                db.execute('INSERT INTO sessions(token_hash,expires_at) VALUES(?,?)',(hashlib.sha256(token.encode()).hexdigest(),now+4*3600))
+        if not valid:
+            raise HTTPException(401, 'Parol noto‘g‘ri.')
+        response.set_cookie('hisobchi_admin', token, httponly=True, secure=secure_cookie, samesite='strict', max_age=4*3600, path='/api/v1')
         return {'authenticated': True}
 
     @app.get('/api/v1/admin/me', dependencies=[Depends(admin)])
@@ -161,7 +190,7 @@ def create_app(db_path=None, admin_password=None):
     def logout(request: Request, response: Response):
         with database.connect() as db:
             db.execute('DELETE FROM sessions WHERE token_hash=?', (hashlib.sha256(request.cookies.get('hisobchi_admin', '').encode()).hexdigest(),))
-        response.delete_cookie('hisobchi_admin', path='/api/v1')
+        response.delete_cookie('hisobchi_admin', path='/api/v1', secure=secure_cookie, httponly=True, samesite='strict')
         return {'authenticated': False}
 
     @app.get('/api/v1/admin/rules', dependencies=[Depends(admin)])
@@ -192,13 +221,13 @@ def create_app(db_path=None, admin_password=None):
             validate_parameters(calculator_id,config.parameters)
         with database.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            record = db.execute('SELECT deleted_at FROM calculators WHERE id=?', (calculator_id,)).fetchone()
+            record = db.execute('SELECT deleted_at,id FROM calculators WHERE slug=?', (calculator_id,)).fetchone()
             if not record or record['deleted_at'] is not None:
                 raise HTTPException(409, 'Avval o‘chirilgan kalkulyatorni qayta tiklang.')
-            latest = db.execute("SELECT MAX(effective_from) AS value FROM rules WHERE status='published' AND service_id=?",(calculator_id,)).fetchone()['value']
+            latest = db.execute("SELECT MAX(effective_from) AS value FROM rules WHERE status='published' AND service_id=(SELECT id FROM calculators WHERE slug=?)",(calculator_id,)).fetchone()['value']
             if latest and str(config.effective_from) < latest:
                 raise HTTPException(422, 'Kuchga kirish sanasi oxirgi e’lon qilingan qoidadan oldin bo‘lishi mumkin emas.')
-            cursor = db.execute("INSERT INTO rules(service_id,status,effective_from,config,published_at) VALUES(?,'published',?,?,CURRENT_TIMESTAMP)", (calculator_id,str(config.effective_from), config.model_dump_json()))
+            cursor = db.execute("INSERT INTO rules(service_id,status,effective_from,config,published_at) VALUES(?,'published',?,?,CURRENT_DATE)", (record['id'],str(config.effective_from), config.model_dump_json()))
             rule_id = cursor.lastrowid
             db.execute('INSERT INTO audit(rule_id,action) VALUES(?,?)', (rule_id, 'Kalkulyator stavkalari tahrirlandi va saqlandi'))
         return {'rule': next(r for r in database.all_rules(calculator_id) if r['id'] == rule_id)}
@@ -209,9 +238,9 @@ def create_app(db_path=None, admin_password=None):
             raise HTTPException(404, 'Kalkulyator topilmadi.')
         with database.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            cursor = db.execute('UPDATE calculators SET deleted_at=CURRENT_TIMESTAMP WHERE id=? AND deleted_at IS NULL', (calculator_id,))
+            cursor = db.execute('UPDATE calculators SET deleted_at=CURRENT_DATE WHERE slug=? AND deleted_at IS NULL', (calculator_id,))
             if cursor.rowcount:
-                rule = db.execute("SELECT id FROM rules WHERE status='published' AND service_id=? ORDER BY effective_from DESC,id DESC LIMIT 1",(calculator_id,)).fetchone()
+                rule = db.execute("SELECT id FROM rules WHERE status='published' AND service_id=(SELECT id FROM calculators WHERE slug=?) ORDER BY effective_from DESC,id DESC LIMIT 1",(calculator_id,)).fetchone()
                 db.execute('INSERT INTO audit(rule_id,action) VALUES(?,?)', (rule['id'], 'Kalkulyator o‘chirildi (tarix saqlandi)'))
         return {'deleted': True}
 
@@ -221,9 +250,9 @@ def create_app(db_path=None, admin_password=None):
             raise HTTPException(404, 'Kalkulyator topilmadi.')
         with database.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            cursor = db.execute('UPDATE calculators SET deleted_at=NULL WHERE id=? AND deleted_at IS NOT NULL', (calculator_id,))
+            cursor = db.execute('UPDATE calculators SET deleted_at=NULL WHERE slug=? AND deleted_at IS NOT NULL', (calculator_id,))
             if cursor.rowcount:
-                rule = db.execute("SELECT id FROM rules WHERE status='published' AND service_id=? ORDER BY effective_from DESC,id DESC LIMIT 1",(calculator_id,)).fetchone()
+                rule = db.execute("SELECT id FROM rules WHERE status='published' AND service_id=(SELECT id FROM calculators WHERE slug=?) ORDER BY effective_from DESC,id DESC LIMIT 1",(calculator_id,)).fetchone()
                 db.execute('INSERT INTO audit(rule_id,action) VALUES(?,?)', (rule['id'], 'Kalkulyator qayta tiklandi'))
         return {'restored': True}
 
@@ -232,7 +261,7 @@ def create_app(db_path=None, admin_password=None):
         if body.verified_at > today():
             raise HTTPException(422, 'Tekshirilgan sana kelajakda bo‘lishi mumkin emas.')
         with database.connect() as db:
-            cursor = db.execute("INSERT INTO rules(status,effective_from,config) VALUES('draft',?,?)", (str(body.effective_from), body.model_dump_json()))
+            cursor = db.execute("INSERT INTO rules(service_id,status,effective_from,config) VALUES((SELECT id FROM calculators WHERE slug='notary_car'),'draft',?,?)", (str(body.effective_from), body.model_dump_json()))
             rule_id = cursor.lastrowid
             db.execute('INSERT INTO audit(rule_id,action) VALUES(?,?)', (rule_id, 'Yangi qoralama yaratildi'))
         return {'rule': next(r for r in database.all_rules() if r['id'] == rule_id)}
@@ -252,10 +281,10 @@ def create_app(db_path=None, admin_password=None):
             if row['status'] != 'draft':
                 raise HTTPException(409, 'Qoida allaqachon e’lon qilingan.')
             config = RuleConfig.model_validate_json(row['config'])
-            latest = db.execute("SELECT MAX(effective_from) AS value FROM rules WHERE status='published' AND service_id='notary_car'").fetchone()['value']
+            latest = db.execute("SELECT MAX(effective_from) AS value FROM rules WHERE status='published' AND service_id=(SELECT id FROM calculators WHERE slug='notary_car')").fetchone()['value']
             if latest and str(config.effective_from) < latest:
                 raise HTTPException(422, 'Yangi qoida oxirgi e’lon qilingan qoidaning sanasidan oldin boshlana olmaydi.')
-            db.execute("UPDATE rules SET status='published',published_at=CURRENT_TIMESTAMP WHERE id=?", (rule_id,))
+            db.execute("UPDATE rules SET status='published',published_at=CURRENT_DATE WHERE id=?", (rule_id,))
             db.execute('INSERT INTO audit(rule_id,action) VALUES(?,?)', (rule_id, 'Admin manbani tekshirib e’lon qildi'))
         return {'rule': next(r for r in database.all_rules() if r['id'] == rule_id)}
 
@@ -279,18 +308,18 @@ def create_app(db_path=None, admin_password=None):
         visitor = owner(request, response)
         with database.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            calc = db.execute('SELECT * FROM calculations WHERE id=? AND owner=?', (body.calculation_id, visitor)).fetchone()
+            calc = db.execute('SELECT * FROM calculations WHERE public_id=? AND owner=?', (body.calculation_id, visitor)).fetchone()
             if not calc:
                 raise HTTPException(404, 'Hisob topilmadi yoki ushbu brauzerga tegishli emas.')
             result = json.loads(calc['result'])
             if result['status'] not in {'discounted', 'exempt'} or result['service_id'] != body.service_id:
                 raise HTTPException(422, 'Bu hisob uchun imtiyozdan foydalanish tasdig‘i qo‘shilmaydi.')
-            saved = db.execute('SELECT * FROM reports WHERE calculation_id=?', (body.calculation_id,)).fetchone()
+            saved = db.execute('SELECT * FROM reports WHERE calculation_id=?', (calc['id'],)).fetchone()
             if not saved:
                 saving = body.standard_amount - body.paid_amount if body.standard_amount is not None else None
-                db.execute('INSERT INTO reports(id,calculation_id,standard_amount,paid_amount,saving_amount) VALUES(?,?,?,?,?)', (str(uuid.uuid4()), body.calculation_id, body.standard_amount, body.paid_amount, saving))
-                saved = db.execute('SELECT * FROM reports WHERE calculation_id=?', (body.calculation_id,)).fetchone()
-            return {'report': {**dict(saved), 'service_id': body.service_id, 'verification': 'self_reported', 'is_demo': False, 'reported_at': saved['created_at']}, 'impact': impact(db)}
+                db.execute('INSERT INTO reports(public_id,calculation_id,standard_amount,paid_amount,saving_amount) VALUES(?,?,?,?,?)', (str(uuid.uuid4()), calc['id'], body.standard_amount, body.paid_amount, saving))
+                saved = db.execute('SELECT * FROM reports WHERE calculation_id=?', (calc['id'],)).fetchone()
+            return {'report': {**{k:saved[k] for k in ('standard_amount','paid_amount','saving_amount','created_at')}, 'id':saved['public_id'], 'calculation_id':body.calculation_id, 'service_id': body.service_id, 'verification': 'self_reported', 'is_demo': False, 'reported_at': saved['created_at']}, 'impact': impact(db)}
 
     builder.install(app,database,admin,today)
     return app

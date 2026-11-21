@@ -19,6 +19,7 @@ class Strict(BaseModel):
 
 
 class Condition(Strict):
+    minus_field: str = Field(default='', max_length=60, exclude_if=lambda value: not value)
     field: str = Field(pattern=IDENTIFIER)
     op: Literal['eq','ne','gt','gte','lt','lte'] = 'eq'
     value: str = Field(max_length=300)
@@ -129,6 +130,9 @@ class Definition(Strict):
                 if c.field not in keys:
                     raise ValueError('Qoida omili topilmadi.')
                 f=keys[c.field]
+                if c.minus_field and (f.type != 'number' or c.minus_field == c.field or
+                                      c.minus_field not in keys or keys[c.minus_field].type != 'number'):
+                    raise ValueError('Farq uchun ikkita alohida raqamli omil tanlang.')
                 if c.op not in {'eq','ne'} and f.type!='number':
                     raise ValueError('Solishtirish uchun raqamli omil kerak.')
                 if f.type=='number':
@@ -150,8 +154,12 @@ def digest(definition):
     return hashlib.sha256(definition.model_dump_json().encode()).hexdigest()
 
 
+def is_traffic_fine(service_id, definition):
+    return service_id in {'custom_traffic_speed', 'custom_traffic_signal'} or definition.category == 'Yo‘l harakati jarimalari'
+
+
 def service(service_id, definition):
-    return {'id':service_id,'name':definition.name,'category':definition.category,'icon':definition.icon,'description':definition.description,'scope':definition.description or 'Admin sozlagan davlat boji hisobi.','review_note':'','dynamic':True}
+    return {'charge_type':'fine' if is_traffic_fine(service_id,definition) else 'duty','id':service_id,'name':definition.name,'category':definition.category,'icon':definition.icon,'description':definition.description,'scope':definition.description or 'Admin sozlagan davlat boji hisobi.','review_note':'','dynamic':True}
 
 
 def questions(definition):
@@ -252,6 +260,9 @@ def evaluate(service_id, definition, raw, as_of, rule_id=None, preview=False):
         def matches(c):
             if c.field not in answers:return False
             a=answers[c.field];b=Decimal(c.value) if isinstance(a,Decimal) else c.value
+            if c.minus_field:
+                if c.minus_field not in answers: return False
+                a -= answers[c.minus_field]
             return {'eq':lambda:a==b,'ne':lambda:a!=b,'gt':lambda:a>b,'gte':lambda:a>=b,'lt':lambda:a<b,'lte':lambda:a<=b}[c.op]()
         if all(matches(c) for c in r.conditions):apply(r.effect,r.label)
     if definition.combine=='sum' and not active:current=initial
@@ -273,26 +284,31 @@ def evaluate(service_id, definition, raw, as_of, rule_id=None, preview=False):
         'next_steps':['Natijadagi manbalar va hisobga kiritgan ma’lumotlaringizni tekshiring.'],
         'other_costs_note':'Faqat davlat boji. Boshqa xizmat haqlari alohida.','rule_version':rule_id,'as_of_date':str(as_of),
         'verified_at':None,'review_status':'admin_configured','review_note':'Admin sozlagan stavka va shartlar asosida hisoblandi.', 'is_demo':preview}
+    if is_traffic_fine(service_id, definition):
+        result.update(charge_type='fine', arithmetic=[line.rsplit(': ',1)[-1].removesuffix(' so‘m.') for line in (steps[1:] or steps)],
+                      other_costs_note='Qarordagi to‘liq jarima. Muddatidan oldin to‘lash chegirmasi hisobga kiritilmagan.',
+                      explanation='\n'.join(line.replace('Boshlang‘ich boj', 'Boshlang‘ich summa') for line in steps),
+                      next_steps=[], benefit_title='Jarima miqdori')
     return {'result':result,'question':None}
 
 
 def install(app,database,admin,today):
     from fastapi import Depends
-    with database.connect() as db:
-        db.executescript('''
-        CREATE TABLE IF NOT EXISTS custom_calculators(id TEXT PRIMARY KEY, definition TEXT NOT NULL, revision INTEGER NOT NULL DEFAULT 1, tested_hash TEXT, deleted_at TEXT, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
-        CREATE TABLE IF NOT EXISTS custom_categories(name TEXT PRIMARY KEY COLLATE NOCASE, icon TEXT NOT NULL);
-        ''')
+    drafts = ('SELECT d.*,c.slug,c.deleted_at FROM custom_calculators d '
+              'JOIN calculators c ON c.id=d.id ')
+
+    def find_draft(db, slug):
+        return db.execute(drafts+'WHERE c.slug=?',(slug,)).fetchone()
 
     def row_data(row):
         d=Definition.model_validate_json(row['definition'])
-        current=database.current_rule(str(today()),row['id'])
-        latest=next((r for r in database.all_rules(row['id']) if r['status']=='published'),None)
-        return {**service(row['id'],d),'definition':d.model_dump(mode='json'),'revision':row['revision'],'active':row['deleted_at'] is None,'tested':row['tested_hash']==digest(d),'published':latest is not None,'rule':current,'latest_version':latest['id'] if latest else None,'has_changes':not latest or Definition.model_validate(latest['config']['definition']).model_dump(mode='json')!=d.model_dump(mode='json')}
+        current=database.current_rule(str(today()),row['slug'])
+        latest=next((r for r in database.all_rules(row['slug']) if r['status']=='published'),None)
+        return {**service(row['slug'],d),'definition':d.model_dump(mode='json'),'revision':row['revision'],'active':row['deleted_at'] is None,'tested':row['tested_hash']==digest(d),'published':latest is not None,'rule':current,'latest_version':latest['id'] if latest else None,'has_changes':not latest or Definition.model_validate(latest['config']['definition']).model_dump(mode='json')!=d.model_dump(mode='json')}
 
     @app.get('/api/v1/admin/builder',dependencies=[Depends(admin)])
     def listing():
-        with database.connect() as db:rows=db.execute('SELECT * FROM custom_calculators ORDER BY created_at,id').fetchall()
+        with database.connect() as db:rows=db.execute(drafts+'ORDER BY d.created_at,d.id').fetchall()
         return {'calculators':[row_data(r) for r in rows],'icons':ICONS,'server_date':str(today())}
 
     @app.get('/api/v1/admin/categories',dependencies=[Depends(admin)])
@@ -300,7 +316,7 @@ def install(app,database,admin,today):
         from .catalog import CATALOG
         defaults={i['category']:{'name':i['category'],'icon':i['icon']} for i in CATALOG}
         with database.connect() as db:
-            for r in db.execute('SELECT * FROM custom_categories ORDER BY name'):defaults[r['name']]=dict(r)
+            for r in db.execute('SELECT name,icon FROM custom_categories ORDER BY name'):defaults[r['name']]=dict(r)
         return {'categories':list(defaults.values())}
 
     class CategoryRequest(Strict):
@@ -324,26 +340,31 @@ def install(app,database,admin,today):
         encoded=body.definition.model_dump_json()
         with database.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            row=db.execute('SELECT * FROM custom_calculators WHERE id=?',(service_id,)).fetchone()
+            row = find_draft(db, service_id)
+            db.execute('INSERT OR IGNORE INTO custom_categories(name,icon) VALUES(?,?)',(body.definition.category,body.definition.icon))
+            category_id = db.execute('SELECT id FROM custom_categories WHERE name=?',(body.definition.category,)).fetchone()[0]
             if row:
                 if row['deleted_at']:raise HTTPException(409,'Avval kalkulyatorni qayta tiklang.')
                 if body.revision!=row['revision']:raise HTTPException(409,'Boshqa o‘zgarish saqlangan. Ro‘yxatni yangilang.')
                 if row['definition']!=encoded:
-                    db.execute('UPDATE custom_calculators SET definition=?, revision=revision+1 WHERE id=?',(encoded,service_id))
+                    db.execute('UPDATE custom_calculators SET definition=?,category_id=?,revision=revision+1 WHERE id=?',(encoded,category_id,row['id']))
             else:
-                db.execute('INSERT INTO custom_calculators(id,definition) VALUES(?,?)',(service_id,encoded))
-                db.execute('INSERT INTO calculators(id) VALUES(?)',(service_id,))
-            db.execute('INSERT OR IGNORE INTO custom_categories(name,icon) VALUES(?,?)',(body.definition.category,body.definition.icon))
-            row=db.execute('SELECT * FROM custom_calculators WHERE id=?',(service_id,)).fetchone()
+                pk = db.execute('INSERT INTO calculators(slug) VALUES(?)',(service_id,)).lastrowid
+                db.execute('INSERT INTO custom_calculators(id,category_id,definition) VALUES(?,?,?)',(pk,category_id,encoded))
+            row = find_draft(db, service_id)
         return {'calculator':row_data(row)}
 
+    class CreateRequest(SaveRequest):
+        slug: str | None = Field(default=None, pattern=IDENTIFIER)
+
     @app.post('/api/v1/admin/builder',dependencies=[Depends(admin)])
-    def create(body:SaveRequest):return save(body)
+    def create(body:CreateRequest):
+        return save(SaveRequest(definition=body.definition), 'custom_'+body.slug if body.slug else None)
 
     @app.put('/api/v1/admin/builder/{service_id}',dependencies=[Depends(admin)])
     def update(service_id:str,body:SaveRequest):
         with database.connect() as db:
-            if not db.execute('SELECT 1 FROM custom_calculators WHERE id=?',(service_id,)).fetchone():raise HTTPException(404,'Kalkulyator topilmadi.')
+            if not find_draft(db, service_id):raise HTTPException(404,'Kalkulyator topilmadi.')
         return save(body,service_id)
 
     class PreviewRequest(Strict):
@@ -354,13 +375,13 @@ def install(app,database,admin,today):
     def preview(service_id:str,body:PreviewRequest):
         with database.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            row=db.execute('SELECT * FROM custom_calculators WHERE id=? AND deleted_at IS NULL',(service_id,)).fetchone()
-            if not row:raise HTTPException(404,'Kalkulyator topilmadi.')
+            row=find_draft(db, service_id)
+            if not row or row['deleted_at']:raise HTTPException(404,'Kalkulyator topilmadi.')
             if row['revision']!=body.revision:raise HTTPException(409,'Qoralama yangilangan. Qayta oching.')
             d=Definition.model_validate_json(row['definition'])
             outcome=evaluate(service_id,d,body.answers,today(),preview=True)
             if outcome['result'] and outcome['result']['payable_amount'] is not None:
-                db.execute('UPDATE custom_calculators SET tested_hash=? WHERE id=?',(digest(d),service_id))
+                db.execute('UPDATE custom_calculators SET tested_hash=? WHERE id=?',(digest(d),row['id']))
         return outcome
 
     class PublishRequest(Strict):
@@ -370,42 +391,42 @@ def install(app,database,admin,today):
     def publish(service_id:str,body:PublishRequest):
         with database.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            row=db.execute('SELECT * FROM custom_calculators WHERE id=? AND deleted_at IS NULL',(service_id,)).fetchone()
-            if not row:raise HTTPException(404,'Kalkulyator topilmadi.')
+            row=find_draft(db, service_id)
+            if not row or row['deleted_at']:raise HTTPException(404,'Kalkulyator topilmadi.')
             if row['revision']!=body.revision:raise HTTPException(409,'Qoralama o‘zgargan. Qayta oching.')
             d=Definition.model_validate_json(row['definition'])
             if not d.sources:raise HTTPException(422,'E’lon qilish uchun kamida bitta Lex.uz manbasini qo‘shing.')
             if row['tested_hash']!=digest(d):raise HTTPException(422,'Shu qoralamani avval sinab ko‘ring.')
-            latest=db.execute("SELECT * FROM rules WHERE service_id=? AND status='published' ORDER BY effective_from DESC,id DESC LIMIT 1",(service_id,)).fetchone()
+            latest=db.execute("SELECT * FROM rules WHERE service_id=? AND status='published' ORDER BY effective_from DESC,id DESC LIMIT 1",(row['id'],)).fetchone()
             if latest and str(d.effective_from)<latest['effective_from']:raise HTTPException(422,'Sana oxirgi e’lon qilingan qoidadan oldin bo‘lmasin.')
             if latest and json.loads(latest['config'])['definition']==d.model_dump(mode='json'):
                 return {'published':True,'rule_id':latest['id']}
             config={'kind':'dynamic','definition':d.model_dump(mode='json'),'bhm_amount':d.bhm_amount,'effective_from':str(d.effective_from),'verified_at':str(today()),'law_url':d.sources[0].url,'law_article':d.sources[0].title,'bhm_source_url':'https://lex.uz/docs/-8283656','change_note':'Admin konstruktordan e’lon qildi.'}
-            cursor=db.execute("INSERT INTO rules(service_id,status,effective_from,config,published_at) VALUES(?,'published',?,?,CURRENT_TIMESTAMP)",(service_id,str(d.effective_from),json.dumps(config,ensure_ascii=False)))
+            cursor=db.execute("INSERT INTO rules(service_id,status,effective_from,config,published_at) VALUES(?,'published',?,?,CURRENT_DATE)",(row['id'],str(d.effective_from),json.dumps(config,ensure_ascii=False)))
             db.execute('INSERT INTO audit(rule_id,action) VALUES(?,?)',(cursor.lastrowid,'Konstruktor: '+d.name+' e’lon qilindi'))
         return {'published':True,'rule_id':cursor.lastrowid}
 
     @app.delete('/api/v1/admin/builder/{service_id}',dependencies=[Depends(admin)])
     def delete(service_id:str):
         with database.connect() as db:
-            if not db.execute('SELECT 1 FROM custom_calculators WHERE id=?',(service_id,)).fetchone():raise HTTPException(404,'Kalkulyator topilmadi.')
-            db.execute('UPDATE custom_calculators SET deleted_at=CURRENT_TIMESTAMP WHERE id=?',(service_id,))
-            db.execute('UPDATE calculators SET deleted_at=CURRENT_TIMESTAMP WHERE id=?',(service_id,))
+            if not find_draft(db, service_id):raise HTTPException(404,'Kalkulyator topilmadi.')
+            db.execute('UPDATE calculators SET deleted_at=CURRENT_DATE WHERE slug=?',(service_id,))
         return {'deleted':True}
 
     @app.post('/api/v1/admin/builder/{service_id}/restore',dependencies=[Depends(admin)])
     def restore(service_id:str):
         with database.connect() as db:
-            if not db.execute('SELECT 1 FROM custom_calculators WHERE id=?',(service_id,)).fetchone():raise HTTPException(404,'Kalkulyator topilmadi.')
-            db.execute('UPDATE custom_calculators SET deleted_at=NULL WHERE id=?',(service_id,))
-            db.execute('UPDATE calculators SET deleted_at=NULL WHERE id=?',(service_id,))
+            if not find_draft(db, service_id):raise HTTPException(404,'Kalkulyator topilmadi.')
+            db.execute('UPDATE calculators SET deleted_at=NULL WHERE slug=?',(service_id,))
         return {'restored':True}
 
 
 def published_services(database,as_of):
-    with database.connect() as db:ids=[r['id'] for r in db.execute('SELECT id FROM custom_calculators WHERE deleted_at IS NULL ORDER BY created_at,id')]
-    result=[]
-    for i in ids:
-        r=database.current_rule(str(as_of),i)
-        if r:result.append(service(i,Definition.model_validate(r['config']['definition'])))
-    return result
+    with database.connect() as db:
+        rows = db.execute('''
+            SELECT c.slug,r.config FROM custom_calculators d JOIN calculators c ON c.id=d.id
+            JOIN rules r ON r.id=(SELECT id FROM rules WHERE service_id=c.id AND status='published'
+                AND effective_from<=? ORDER BY effective_from DESC,id DESC LIMIT 1)
+            WHERE c.deleted_at IS NULL ORDER BY d.created_at,d.id
+        ''',(str(as_of),)).fetchall()
+    return [service(row['slug'],Definition.model_validate(json.loads(row['config'])['definition'])) for row in rows]
