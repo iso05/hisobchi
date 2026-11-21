@@ -1,0 +1,15 @@
+.fee-page {padding-bottom: 108px}
+.fee-workspace {align-items:start}
+.fee-scope-note {display:grid;gap:4px;align-self:stretch}
+.fee-scope-note strong {color:var(--green);font-size:14px}
+.fee-workspace .chat-card {min-width:0;height:auto;min-height:0}
+.fee-result {padding:clamp(20px,3vw,38px);color:#125b43;overflow-wrap:anywhere}
+.fee-result h2 {margin:.6em 0}.fee-result h3 {font-size:1rem;margin:1.5em 0 .4em}
+.fee-result p {line-height:1.55;color:#486358}.fee-total {font-size:clamp(1.8rem,4vw,3rem);line-height:1.15}
+.fee-result dl {display:grid;grid-template-columns:1fr auto;gap:8px 15px;margin:18px 0}.fee-result dd {margin:0;font-weight:650}
+.fee-result .fee-equation {font-variant-numeric:tabular-nums;background:#f0f6f2;padding:9px 12px;border-radius:8px;margin:.5em 0}
+.fee-source {display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid #dfebe4;padding:11px 0;color:#0b6145}.fee-source svg {flex:none}
+.fee-page #selected-calculator {scroll-margin-top:16px}.fee-page select {max-width:100%;text-overflow:ellipsis}
+@media(max-width:760px) {.fee-workspace{grid-template-columns:minmax(0,1fr)}.fee-result{scroll-margin-block:16px}.fee-page .search-categories{flex-wrap:wrap}.fee-page .field{min-width:0}.fee-page .console-intro h1{overflow-wrap:break-word}}
+
+.fee-result .benefit-note {padding:12px 15px;border-inline-start:3px solid #8eb69e;background:#f3f8f5;color:#355b46;border-radius:4px}

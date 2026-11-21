@@ -1,0 +1,17 @@
+.service-tools {position:fixed;z-index:100;right:max(20px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:flex-end;gap:9px;pointer-events:none}
+.tool-group {position:relative;pointer-events:auto}.tool-group[data-open=true]{z-index:1}
+.tool-language,.tool-services {display:flex;align-items:center;justify-content:center;gap:9px;min-height:44px;border:1px solid #d3e4da;background:#fff;padding:9px 15px;border-radius:24px;color:#1a5b42;font-weight:650;box-shadow:0 6px 24px #063e2720}
+.tool-services {color:#fff;background:#075a40;border-color:#075a40;padding-inline:18px}
+.tool-options {position:absolute;right:100%;bottom:0;padding:5px;margin-right:8px;display:grid;gap:2px;width:max-content;max-width:calc(100vw - 40px);background:white;color:#153e2e;border:1px solid #d2e4d9;border-radius:15px;box-shadow:0 10px 36px #073a2724;transform-origin:bottom right;animation:tool-reveal .16s ease-out}
+.tool-options::after {content:"";position:absolute;left:100%;width:10px;top:0;bottom:0}
+.tool-options :is(button,a) {display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;background:transparent;border:0;border-radius:10px;min-height:42px;padding:8px 12px;text-align:start;font:inherit;font-size:14px}
+.tool-options :is(button,a):is(:hover,:focus-visible){background:#edf6f0}.tool-options button span,.tool-options a svg:last-child{margin-inline-start:auto}.tool-options button span{font-size:11px;color:#536e60}
+.refund-page .refund-document-language {display:grid;justify-items:center;gap:9px;margin:8px auto 32px}
+.refund-document-language>span {font-size:clamp(18px,2vw,22px);font-weight:650;color:#174832}
+.refund-document-language select {width:min(280px,85vw);min-height:54px;border:1px solid #bad8c7;border-radius:14px;padding:10px 18px;background:#fff;color:#163e2e;font:inherit;font-size:18px;text-align:center}
+.refund-page {padding-bottom:100px}
+@keyframes tool-reveal {from{opacity:0;transform:translate(5px,3px) scale(.97)}to{opacity:1;transform:none}}
+@media(max-width:620px){.service-tools{right:12px;bottom:max(9px,env(safe-area-inset-bottom));gap:6px}.tool-services{font-size:13px;padding:9px 12px}.tool-options{right:0;bottom:100%;margin:0 0 5px}.tool-options::after{top:100%;bottom:auto;left:0;height:6px;width:100%}.conversation-page~.service-tools{flex-direction:row;align-items:center}.conversation-page~.service-tools .tool-services{font-size:0;gap:0}.conversation-page~.service-tools .tool-language{font-size:12px}.conversation-page .conversation-dock{padding-bottom:58px}}
+@media(prefers-reduced-motion:reduce){.tool-options{animation:none}}
+
+.refund-downloads {display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}

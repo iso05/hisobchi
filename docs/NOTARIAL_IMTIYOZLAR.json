@@ -1,0 +1,192 @@
+{
+  "checked_at": "2026-11-20",
+  "source": "https://lex.uz/docs/-4680944",
+  "cases": [
+    {
+      "number": 1,
+      "title": "Pensiya, nafaqa va oilaga oid hujjat nusxalari",
+      "description": "Pensiya yoki nafaqa olish, vasiylik yoki farzandlikka olish ishi uchun hujjat nusxasini tasdiqlash.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=1%29%20shaxslar%20%E2%80%94%20davlat%20pensiyalari%20va%20nafaqalarini",
+      "find_text": "1) shaxslar — davlat pensiyalari va nafaqalarini",
+      "services": []
+    },
+    {
+      "number": 2,
+      "title": "Davlat yoki tashkilotga hadya",
+      "description": "Davlat yoki yuridik shaxs foydasiga hadya va vasiyatnomani tasdiqlash. Oddiy oldi-sotdiga tegishli emas.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=2%29%20shaxslar%20%E2%80%94%20mol-mulkini%20davlat%20foydasiga",
+      "find_text": "2) shaxslar — mol-mulkini davlat foydasiga",
+      "services": []
+    },
+    {
+      "number": 3,
+      "title": "Davlatga o‘tadigan meros",
+      "description": "Soliq yoki moliya organiga davlatning meros huquqi guvohnomasi, uning dublikati va kerakli hujjatlar.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=3%29%20davlat%20soliq%20xizmati%20organlari%20va%20moliya%20organlari",
+      "find_text": "3) davlat soliq xizmati organlari va moliya organlari",
+      "services": [
+        "notary_inheritance"
+      ]
+    },
+    {
+      "number": 4,
+      "title": "Nogironligi bo‘lgan shaxslar tashkilotlari",
+      "description": "Jamoat birlashmalari va ularning muassasalari, o‘quv-ishlab chiqarish korxonalari hamda birlashmalari uchun. Shaxsning nogironligi o‘zi bu asosga teng emas.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=4%29%20nogironligi%20bo%CA%BBlgan%20shaxslarning%20jamoat%20birlashmalari",
+      "find_text": "4) nogironligi boʻlgan shaxslarning jamoat birlashmalari",
+      "services": [
+        "notary_car",
+        "notary_property",
+        "notary_vehicle_power",
+        "notary_property_power",
+        "notary_lease",
+        "notary_inheritance"
+      ]
+    },
+    {
+      "number": 5,
+      "title": "Merosga oid imtiyozlar",
+      "description": "Xizmat yoki fuqarolik burchida halok bo‘lgan shaxs merosi; shartlari bajarilgan uy-joy; qonundagi omonat, sug‘urta, ish haqi, pensiya mablag‘i, mualliflik huquqi va haq.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=5%29%20shaxslar%20%E2%80%94%20ularga%20quyidagilar%20uchun%20merosga%20bo%CA%BBlgan%20huquqi",
+      "find_text": "5) shaxslar — ularga quyidagilar uchun merosga boʻlgan huquqi",
+      "services": [
+        "notary_inheritance"
+      ]
+    },
+    {
+      "number": 6,
+      "title": "Pensiya yoki nafaqa olish ishonchnomasi",
+      "description": "Faqat pensiya va nafaqa olish uchun ishonchnoma. Avtomobil yoki uy-joyni tasarruf qilish ishonchnomasi emas.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=6%29%20shaxslar%20%E2%80%94%20pensiyalar%20va%20nafaqalar%20olish%20uchun",
+      "find_text": "6) shaxslar — pensiyalar va nafaqalar olish uchun",
+      "services": []
+    },
+    {
+      "number": 7,
+      "title": "Ko‘p bolali onaning mukofot hujjatlari",
+      "description": "Ko‘p bolalik uchun orden yoki medal berish ishidagi hujjat nusxalarini tasdiqlash.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=7%29%20onalar%20%E2%80%94%20ko%CA%BBp%20bolalik%20uchun",
+      "find_text": "7) onalar — koʻp bolalik uchun",
+      "services": []
+    },
+    {
+      "number": 8,
+      "title": "Maktab-internatning ijro yozuvi",
+      "description": "Bolaning internatdagi ta’minoti uchun ota-onadan qarz undirishga oid ijro yozuvi.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=8%29%20maktab-internatlar%20%E2%80%94%20farzandlarining",
+      "find_text": "8) maktab-internatlar — farzandlarining",
+      "services": []
+    },
+    {
+      "number": 9,
+      "title": "Ixtisoslashtirilgan maktab ta’minoti",
+      "description": "Moliya organining tegishli ixtisoslashtirilgan maktab ta’minoti qarzini undirish ijro yozuvi.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=9%29%20moliya%20organlari%20%E2%80%94%20farzandlarining",
+      "find_text": "9) moliya organlari — farzandlarining",
+      "services": []
+    },
+    {
+      "number": 10,
+      "title": "Ishdagi baxtsiz hodisa sug‘urtasi",
+      "description": "Ishdagi baxtsiz hodisadan vafot etish uchun korxona hisobidan sug‘urtalangan shaxsning sug‘urta puliga meros guvohnomasi.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=10%29%20ishlab%20chiqarishdagi%20baxtsiz%20hodisa",
+      "find_text": "10) ishlab chiqarishdagi baxtsiz hodisa",
+      "services": [
+        "notary_inheritance"
+      ]
+    },
+    {
+      "number": 11,
+      "title": "Vasiylik belgilangan merosxo‘r",
+      "description": "Surunkali ruhiy kasallik va qonuniy belgilangan vasiylik birga mavjud bo‘lsa — meros guvohnomasi.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=11%29%20surunkali%20ruhiy%20kasallikka%20chalingan",
+      "find_text": "11) surunkali ruhiy kasallikka chalingan",
+      "services": [
+        "notary_inheritance"
+      ]
+    },
+    {
+      "number": 12,
+      "title": "Davlat organi orqali ishga yuborish",
+      "description": "Bandlik organlari orqali tashkiliy ishga qabul qilishda tuzilgan mehnat shartnomasini tasdiqlash.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=12%29%20O%CA%BBzbekiston%20Respublikasi%20Kambag%CA%BBallikni%20qisqartirish",
+      "find_text": "12) Oʻzbekiston Respublikasi Kambagʻallikni qisqartirish",
+      "services": []
+    },
+    {
+      "number": 13,
+      "title": "Imtiyoz olish uchun hujjat nusxalari",
+      "description": "Qonunda sanalgan urush, xizmat va Chernobil bilan bog‘liq toifalarga imtiyoz olish uchun zarur nusxalarni tasdiqlash. Barcha notarial harakatlarga umumiy ozodlik emas.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=13%29%201941%20%E2%80%94%201945-yillardagi%20urush%20nogironlari",
+      "find_text": "13) 1941 — 1945-yillardagi urush nogironlari",
+      "services": []
+    },
+    {
+      "number": 14,
+      "title": "Majburiy sug‘urta pulini meros olish",
+      "description": "Yo‘lovchilar yoki fuqaroga tegishli mol-mulk majburiy sug‘urtasi bo‘yicha meros guvohnomasi.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=14%29%20shaxslar%20%E2%80%94%20ularga%20yo%CA%BBlovchilarning%20majburiy%20sug%CA%BBurtasi",
+      "find_text": "14) shaxslar — ularga yoʻlovchilarning majburiy sugʻurtasi",
+      "services": [
+        "notary_inheritance"
+      ]
+    },
+    {
+      "number": 15,
+      "title": "Fermer faoliyatini davom ettirish",
+      "description": "Merosxo‘r fermer xo‘jaligi faoliyatini davom ettirsa — shu xo‘jalik mulkiga meros guvohnomasi.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=15%29%20fermer%20xo%CA%BBjaligida%20faoliyatni%20davom%20ettirayotgan%20merosxo%CA%BBrlar",
+      "find_text": "15) fermer xoʻjaligida faoliyatni davom ettirayotgan merosxoʻrlar",
+      "services": [
+        "notary_inheritance"
+      ]
+    },
+    {
+      "number": 16,
+      "title": "Dehqon faoliyatini davom ettirish",
+      "description": "Merosxo‘r dehqon xo‘jaligi faoliyatini davom ettirsa — shu xo‘jalik mulkiga meros guvohnomasi.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=16%29%20yuridik%20shaxs%20tashkil%20etgan%20va%20tashkil%20etmagan",
+      "find_text": "16) yuridik shaxs tashkil etgan va tashkil etmagan",
+      "services": [
+        "notary_inheritance"
+      ]
+    },
+    {
+      "number": 17,
+      "title": "Kommunal qarzning ijro yozuvi",
+      "description": "Uy-joy mulkdorlari shirkati yoki kommunal tashkilotning badal va xizmat haqi qarzi uchun ijro yozuvi.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=17%29%20xususiy%20uy-joy%20mulkdorlarining%20shirkatlari",
+      "find_text": "17) xususiy uy-joy mulkdorlarining shirkatlari",
+      "services": []
+    },
+    {
+      "number": 18,
+      "title": "Ofatdan keyingi hujjatlarni tiklash",
+      "description": "Tabiiy yoki texnogen ofat jabrlanuvchisiga hujjat dublikati, nusxasi va notarial reyestrdan ko‘chirma berish.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=18%29%20O%CA%BBzbekiston%20Respublikasi%20yoki%20chet%20davlatlar%20hududida",
+      "find_text": "18) Oʻzbekiston Respublikasi yoki chet davlatlar hududida",
+      "services": []
+    },
+    {
+      "number": 19,
+      "title": "Bolaga davlat sotib olgan uy-joy",
+      "description": "Yetim yoki ota-ona qaramog‘isiz bola uchun davlat ikkilamchi bozordan olgan uy-joyni bolaning nomiga rasmiylashtirish.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=19%29%20yetim%20bolalar%20va%20ota-onasining%20qaramog%CA%BBidan%20mahrum",
+      "find_text": "19) yetim bolalar va ota-onasining qaramogʻidan mahrum",
+      "services": [
+        "notary_property"
+      ]
+    },
+    {
+      "number": 20,
+      "title": "Islomiy moliyalashtirishdagi mulk xaridi",
+      "description": "Islomiy bank yoki tegishli mikromoliya tashkiloti mulkni keyin mijozga islomiy moliya asosida sotish uchun o‘z nomiga olishi.",
+      "url": "https://lex.uz/docs/-4680944#-4682691:~:text=20%29%20shaxslar%20%E2%80%94%20islomiy%20bank%20faoliyatini",
+      "find_text": "20) shaxslar — islomiy bank faoliyatini",
+      "services": [
+        "notary_car",
+        "notary_property"
+      ]
+    }
+  ]
+}

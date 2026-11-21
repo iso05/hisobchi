@@ -1,0 +1,240 @@
+{
+  "2-court": {
+    "clause": "2",
+    "uz": {
+      "fact": "Sud ajrimi bilan arizam menga qaytarildi (ish yuritishga qabul qilish rad etildi).",
+      "condition": "sud da’vo arizasini (arizani) qaytarsa yoki uni qabul qilishni rad etsa",
+      "proof": "Arizani qaytarish (qabul qilishni rad etish) to’g’risidagi sud ajrimi nusxasi"
+    },
+    "ru": {
+      "fact": "Суд вернул моё заявление либо отказал в его принятии.",
+      "condition": "суд возвратил заявление или отказал в его принятии",
+      "proof": "Копия определения суда о возврате или отказе в принятии заявления."
+    },
+    "en": "Court returned or refused the filing"
+  },
+  "2-notary": {
+    "clause": "2",
+    "uz": {
+      "fact": "Notarius so’ralgan notarial harakatni amalga oshirishni rad etdi.",
+      "condition": "notarius notarial harakatni amalga oshirishni rad etsa",
+      "proof": "Notarial harakatni rad etish to’g’risidagi qaror nusxasi"
+    },
+    "ru": {
+      "fact": "Нотариус отказал мне в совершении нотариального действия.",
+      "condition": "нотариус отказал в совершении нотариального действия",
+      "proof": "Копия постановления об отказе нотариуса."
+    },
+    "en": "Notary refused the requested act"
+  },
+  "3": {
+    "clause": "3",
+    "uz": {
+      "fact": "Apellyatsiya (kassatsiya, taftish) shikoyatim qaytarildi (qabul qilish rad etildi).",
+      "condition": "apellyatsiya, kassatsiya yoki taftish shikoyati qaytarilsa yoki uni qabul qilish rad etilsa",
+      "proof": "Shikoyatni qaytarish to’g’risidagi sud ajrimi nusxasi"
+    },
+    "ru": {
+      "fact": "Моя апелляционная, кассационная или ревизионная жалоба была возвращена либо не принята.",
+      "condition": "жалоба возвращена или в её принятии отказано",
+      "proof": "Копия определения о возврате жалобы или отказе в её принятии."
+    },
+    "en": "Appeal returned or refused"
+  },
+  "4": {
+    "clause": "4",
+    "uz": {
+      "fact": "Biroq da’vo arizasi (shikoyat) sudga topshirilmadi.",
+      "condition": "davlat boji to’langan, biroq da’vo arizasi (shikoyat) sudga kelib tushmagan bo’lsa",
+      "proof": ""
+    },
+    "ru": {
+      "fact": "Оплаченное заявление или жалоба в суд не поступили.",
+      "condition": "оплаченное заявление или жалоба не поступили в суд",
+      "proof": ""
+    },
+    "en": "Paid filing never reached the court"
+  },
+  "5": {
+    "clause": "5",
+    "uz": {
+      "fact": "Ish sudga taalluqli bo’lmagani sababli sud ish yuritishni tugatdi. Ish boshqa sudga o‘tkazilmadi.",
+      "condition": "ish sudga taalluqli bo’lmagani sababli ish yuritish tugatilsa va ish boshqa sudga o‘tkazilmagan bo‘lsa",
+      "proof": "Ish yuritishni tugatish to’g’risidagi sud ajrimi nusxasi"
+    },
+    "ru": {
+      "fact": "Суд прекратил производство ввиду неподведомственности дела. Дело не передавалось другому суду.",
+      "condition": "дело прекращено ввиду неподведомственности и не передано другому суду",
+      "proof": "Копия определения о прекращении производства."
+    },
+    "en": "Proceedings ended for lack of jurisdiction without transfer"
+  },
+  "6": {
+    "clause": "6",
+    "uz": {
+      "fact": "Ariza muomalaga layoqatsiz shaxs tomonidan berilgani sababli sud uni ko’rmasdan qoldirdi.",
+      "condition": "ariza muomalaga layoqatsiz shaxs tomonidan berilgani sababli ko’rmasdan qoldirilsa",
+      "proof": "Arizani ko’rmasdan qoldirish to’g’risidagi sud ajrimi nusxasi"
+    },
+    "ru": {
+      "fact": "Суд оставил заявление без рассмотрения, поскольку оно подано недееспособным лицом.",
+      "condition": "заявление недееспособного лица оставлено без рассмотрения",
+      "proof": "Копия определения об оставлении заявления без рассмотрения."
+    },
+    "en": "Filing by an incapacitated person left without consideration"
+  },
+  "7": {
+    "clause": "7",
+    "uz": {
+      "fact": "Xuddi shu nizo bo’yicha ish sud (hakamlik sudi) ish yuritishida bo’lgani sababli sud arizamni ko’rmasdan qoldirdi.",
+      "condition": "xuddi shu taraflar o’rtasidagi, xuddi shu predmet va asoslar bo’yicha nizo sud yoki hakamlik sudi ish yuritishida bo’lgani sababli ariza ko’rmasdan qoldirilsa",
+      "proof": "Arizani ko’rmasdan qoldirish to’g’risidagi sud ajrimi nusxasi"
+    },
+    "ru": {
+      "fact": "Суд оставил заявление без рассмотрения из-за находящегося в производстве суда или третейского суда тождественного спора.",
+      "condition": "спор между теми же сторонами о том же предмете и по тем же основаниям уже находится в производстве суда или третейского суда",
+      "proof": "Копия соответствующего определения суда."
+    },
+    "en": "Identical pending dispute and filing left without consideration"
+  },
+  "8": {
+    "clause": "8",
+    "uz": {
+      "fact": "Taraflar o’rtasida hakamlik kelishuvi mavjudligi sababli sud arizamni ko’rmasdan qoldirdi.",
+      "condition": "taraflar o’rtasida hakamlik kelishuvi mavjudligi sababli ariza ko’rmasdan qoldirilsa",
+      "proof": "Arizani ko’rmasdan qoldirish to’g’risidagi sud ajrimi nusxasi"
+    },
+    "ru": {
+      "fact": "Суд оставил заявление без рассмотрения в связи с соглашением о передаче спора в третейский суд.",
+      "condition": "заявление оставлено без рассмотрения в связи с третейским соглашением",
+      "proof": "Копия соответствующего определения суда."
+    },
+    "en": "Filing left without consideration under an arbitration agreement"
+  },
+  "9": {
+    "clause": "9",
+    "uz": {
+      "fact": "Biz javobgar bilan mediativ kelishuv tuzdik va sud arizamni ko’rmasdan qoldirdi.",
+      "condition": "taraflar mediativ kelishuv tuzgani sababli ariza ko’rmasdan qoldirilsa",
+      "proof": "Arizani ko’rmasdan qoldirish to’g’risidagi sud ajrimi nusxasi"
+    },
+    "ru": {
+      "fact": "Мы заключили медиативное соглашение, и суд оставил заявление без рассмотрения.",
+      "condition": "стороны заключили медиативное соглашение и заявление оставлено без рассмотрения",
+      "proof": "Копия соответствующего определения суда."
+    },
+    "en": "Mediation agreement and filing left without consideration"
+  },
+  "9-1": {
+    "clause": "9-1",
+    "uz": {
+      "fact": "Javobgarga nisbatan to‘lovga qobiliyatsizlik ishi qo‘zg‘atilgan va talab shu ishda ko‘rilishi lozim bo‘lgani uchun sud arizamni ko‘rmasdan qoldirdi.",
+      "condition": "javobgarga nisbatan to‘lovga qobiliyatsizlik to’g’risidagi ish qo’zg’atilgani va talab shu ish doirasida ko’rilishi lozimligi sababli ariza ko’rmasdan qoldirilsa",
+      "proof": "Arizani ko’rmasdan qoldirish to’g’risidagi sud ajrimi nusxasi"
+    },
+    "ru": {
+      "fact": "Суд оставил заявление без рассмотрения, поскольку требование подлежит рассмотрению в деле о неплатёжеспособности ответчика.",
+      "condition": "возбуждено дело о неплатёжеспособности ответчика, требование подлежит рассмотрению в этом деле и заявление оставлено без рассмотрения",
+      "proof": "Копия соответствующего определения суда."
+    },
+    "en": "Claim must be heard in the insolvency case and filing was left without consideration"
+  },
+  "10": {
+    "clause": "10",
+    "uz": {
+      "fact": "Ishdagi taraf vafot etdi, nizoli huquqiy munosabat esa huquqiy vorislikka yo’l qo’ymaydi.",
+      "condition": "taraf vafot etgan bo’lsa va nizoli huquqiy munosabat huquqiy vorislikka yo’l qo’ymasa",
+      "proof": "Sud ajrimi nusxasi"
+    },
+    "ru": {
+      "fact": "Участник дела умер. Спорное правоотношение не допускает правопреемства.",
+      "condition": "участник дела умер, а правопреемство невозможно",
+      "proof": "Копия определения суда."
+    },
+    "en": "Party died and legal succession is impossible"
+  },
+  "11": {
+    "clause": "11",
+    "uz": {
+      "fact": "Majburiy sudgacha tartibga rioya qilinmadi va unga rioya qilish imkoniyati boy berildi.",
+      "condition": "qonun yoki shartnomada belgilangan majburiy sudgacha tartibga rioya qilinmagan va bu imkoniyat boy berilgan bo‘lsa",
+      "proof": "Arizani ko’rmasdan qoldirish to’g’risidagi sud ajrimi nusxasi"
+    },
+    "ru": {
+      "fact": "Предусмотренный законом или договором обязательный досудебный порядок не соблюдён, и возможность его соблюдения утрачена.",
+      "condition": "обязательный досудебный порядок не соблюдён и возможность его соблюдения утрачена",
+      "proof": "Копия соответствующего определения суда."
+    },
+    "en": "Mandatory pretrial procedure missed and can no longer be followed"
+  },
+  "12": {
+    "clause": "12",
+    "uz": {
+      "fact": "Voyaga yetmagan bolalarimiz yo‘q. O‘zaro rozilik bilan ajrashish uchun to‘langan bojga qaramay, yarashganimiz yoki birimiz sudga kelmaganimiz sababli nikoh bekor qilinmadi.",
+      "condition": "voyaga yetmagan bolalari bo‘lmagan er-xotin o‘zaro rozilik bilan ajrashish uchun boj to‘lagan, lekin yarashgani yoki ulardan biri sudga kelmagani sabab nikoh bekor qilinmagan bo‘lsa",
+      "proof": ""
+    },
+    "ru": {
+      "fact": "У нас нет несовершеннолетних детей. Развод по взаимному согласию не зарегистрирован из-за примирения или неявки одного из супругов.",
+      "condition": "развод по взаимному согласию супругов без несовершеннолетних детей не состоялся вследствие примирения или неявки одного из супругов",
+      "proof": ""
+    },
+    "en": "Consensual divorce without minor children did not proceed due to reconciliation or nonattendance"
+  },
+  "13": {
+    "clause": "13",
+    "uz": {
+      "fact": "Ishda ishtirok etuvchi yuridik shaxs tugatildi.",
+      "condition": "ishda ishtirok etuvchi yuridik shaxs tugatilgan bo’lsa",
+      "proof": "Sud ajrimi nusxasi"
+    },
+    "ru": {
+      "fact": "Юридическое лицо, участвовавшее в деле, ликвидировано.",
+      "condition": "участвующее в деле юридическое лицо ликвидировано",
+      "proof": "Копия определения суда."
+    },
+    "en": "Legal entity participating in the case was liquidated"
+  },
+  "14": {
+    "clause": "14",
+    "uz": {
+      "fact": "Sud buyrug’i berish to’g’risidagi arizamni qabul qilish rad etildi.",
+      "condition": "sud buyrug’i berish to’g’risidagi arizani qabul qilish rad etilsa",
+      "proof": "Sud buyrug’i berish haqidagi arizani qabul qilishni rad etish to’g’risidagi sud ajrimi nusxasi"
+    },
+    "ru": {
+      "fact": "Суд отказал в принятии моего заявления о выдаче судебного приказа.",
+      "condition": "в принятии заявления о выдаче судебного приказа отказано",
+      "proof": "Копия определения об отказе в принятии заявления."
+    },
+    "en": "Application for a court order refused"
+  },
+  "14-1": {
+    "clause": "14-1",
+    "uz": {
+      "fact": "Dastlabki sud majlisi natijalariga ko’ra sud arizamni ko’rmasdan qoldirdi.",
+      "condition": "ariza dastlabki sud majlisi natijalariga ko’ra ko’rmasdan qoldirilsa",
+      "proof": "Arizani ko’rmasdan qoldirish to’g’risidagi sud ajrimi nusxasi"
+    },
+    "ru": {
+      "fact": "По результатам предварительного слушания суд оставил заявление без рассмотрения.",
+      "condition": "по итогам предварительного слушания заявление оставлено без рассмотрения",
+      "proof": "Копия соответствующего определения суда."
+    },
+    "en": "Filing left without consideration after the preliminary hearing"
+  },
+  "15": {
+    "clause": "15",
+    "uz": {
+      "fact": "O‘zbekiston fuqarosi yoki O‘zbekistonda doimiy yashovchi fuqaroligi bo‘lmagan shaxs sifatida menga xorijga chiqish hujjatini berish rad etildi.",
+      "condition": "O‘zbekiston fuqarosiga yoki O‘zbekistonda doimiy yashovchi fuqaroligi bo‘lmagan shaxsga xorijga chiqish hujjatini berish rad etilgan bo‘lsa",
+      "proof": "Hujjat berish rad etilgani to’g’risidagi xabar nusxasi"
+    },
+    "ru": {
+      "fact": "Мне отказано в выдаче документа на право выезда за границу. Я гражданин Узбекистана либо лицо без гражданства, постоянно проживающее в Узбекистане.",
+      "condition": "гражданину Узбекистана либо постоянно проживающему в стране лицу без гражданства отказано в выдаче документа на право выезда за границу",
+      "proof": "Копия уведомления об отказе в выдаче документа."
+    },
+    "en": "Exit document refused to an Uzbek citizen or permanently resident stateless person"
+  }
+}
