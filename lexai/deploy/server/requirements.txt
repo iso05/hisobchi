@@ -1,0 +1,5 @@
+unsloth
+fastapi
+uvicorn[standard]
+faiss-cpu
+sentence-transformers
